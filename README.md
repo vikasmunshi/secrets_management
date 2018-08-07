@@ -1,2 +1,3 @@
 # secrets_management
-Python3 library for managing secrets
+
+A 'secret' by definition is information that must be kept concealed.
