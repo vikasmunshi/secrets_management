@@ -15,7 +15,7 @@ setup(
     description='Python3 library for managing secrets',
     packages=['cloaked'],
     package_dir={'cloaked': 'cloaked'},
-    install_requires=['pycryptodome>=3.6.4'],
+    install_requires=['pyCryptoDome>=3.6.4', 'pyOpenSSL>=18.0.0'],
     license='GNU GPL3',
     platforms=['any'],
     long_description=open('README.md').read()
