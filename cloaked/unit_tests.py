@@ -77,7 +77,8 @@ class UnitTests(unittest.TestCase):
                     extensions=(
                             ('keyUsage', True, 'Digital Signature, Key Encipherment'),
                             ('basicConstraints', False, 'CA:FALSE')
-                    )
+                    ),
+                    subjectAltName=''
                 ),
                 cloaked.CSRInfo(
                     subject=(

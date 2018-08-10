@@ -5,7 +5,6 @@ Library of functions
 """
 from base64 import b64decode, b64encode
 from collections import namedtuple
-from dataclasses import dataclass
 from hashlib import sha3_256
 from io import BytesIO
 from string import ascii_letters, digits
@@ -15,15 +14,11 @@ from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes, random
 from OpenSSL import crypto
 
+# CSRInfo(subject: ((str, str), ...), extensions: ((str, bool, str), ...), subjectAltName: str)
+CSRInfo = namedtuple('CSRInfo', ('subject', 'extensions', 'subjectAltName'))
 
-@dataclass()
-class CSRInfo:
-    subject: ((str, str), ...)
-    extensions: ((str, bool, str), ...)
-    subjectAltName: str = ''
-
-
-Share = namedtuple('Share', ('i', 'p', 'x', 'y'))  # id, modulus, x, y
+# Share(i:int, p:int, x:int, y:int) # id, modulus, x, y
+Share = namedtuple('Share', ('i', 'p', 'x', 'y'))
 
 __all__ = ('CSRInfo', 'Share', 'decrypt', 'encrypt', 'get_random_str', 'new_csr', 'new_rsa_key', 'merge', 'split')
 
