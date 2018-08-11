@@ -3,9 +3,11 @@
 """
 Library of functions
 """
-from .primitives import *
+from .primitives import RSA, Share, decrypt, encrypt, get_random_str, merge, split
+from .rsa import CSRInfo, new_csr, new_rsa_key, validate_csr_info
 
-__all__ = ('CSRInfo', 'Share', 'decrypt', 'encrypt', 'get_random_str', 'new_csr', 'new_rsa_key', 'merge', 'split')
+__all__ = ('CSRInfo', 'RSA', 'Share', 'decrypt', 'encrypt', 'get_random_str', 'merge', 'new_csr', 'new_rsa_key',
+           'split', 'validate_csr_info')
 __author__ = 'Vikas Munshi'
 __email__ = 'vikas.munshi@gmail.com'
 __license__ = 'GNU GPL3'
