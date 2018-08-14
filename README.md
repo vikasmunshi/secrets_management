@@ -2,5 +2,5 @@
 
 ## install
 
-    pip3 install -e git+https://github.com/vikasmunshi/secrets_management.git#egg=secrets
+    pip3 install -e git+https://github.com/vikasmunshi/secrets_management.git#egg=cloak
     
