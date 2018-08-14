@@ -24,7 +24,7 @@ setup(
     name=package_name,
     package_dir={package_name: 'src'},
     packages=[package_name],
-    platforms=['any'],
+    platforms=['linux'],
     python_requires='>=3.6',
     url='https://github.com/vikasmunshi/secrets_management/',
     version=package_version,
