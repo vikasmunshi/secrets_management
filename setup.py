@@ -4,19 +4,28 @@
 Install utility for package cloaked
 """
 
+from os import path
+
 from setuptools import setup
 
+pkg_info = {}
+with open(path.join(path.abspath(path.dirname(__file__)), 'src/version.py')) as version_file:
+    exec(version_file.read(), pkg_info)
+package_name = pkg_info['__package__']
+package_version = pkg_info['__version__']
+
 setup(
-    name='cloaked',
-    version='0.0.1',
     author='Vikas Munshi',
     author_email='vikas.munshi@gmail.com',
-    url='https://github.com/vikasmunshi/secrets_management/',
     description='Python3 library for managing secrets',
-    packages=['cloaked'],
-    package_dir={'cloaked': 'cloaked'},
     install_requires=['pyCryptoDome>=3.6.4', 'pyOpenSSL>=18.0.0'],
     license='GNU GPL3',
-    platforms=['any'],
-    long_description=open('README.md').read()
+    long_description=open('README.md').read(),
+    name=package_name,
+    package_dir={package_name: 'src'},
+    packages=(package_name,),
+    platforms=('any',),
+    python_requires='>=3.6',
+    url='https://github.com/vikasmunshi/secrets_management/',
+    version=package_version,
 )
