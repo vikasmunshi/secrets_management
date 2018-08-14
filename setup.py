@@ -22,7 +22,7 @@ setup(
     license='GNU GPL3',
     long_description=open('README.md').read(),
     name=package_name,
-    package_dir={package_name: 'src'},
+    package_dir={package_name: package_name},
     packages=[package_name],
     platforms=['linux'],
     python_requires='>=3.6',
