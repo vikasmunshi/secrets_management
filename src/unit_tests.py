@@ -87,11 +87,11 @@ class UnitTests(unittest.TestCase):
     def test_validate_add_subject_alt_name_extension(self):
         """check add subjectAltName to extensions formats properly"""
         for alt_name in ('test', 'www.test', 'some.domain.com'):
-            for sub_alt_name in src.pki.__add_subject_alt_name_extension__((), alt_name)[0][2].split(','):
+            for sub_alt_name in src.pki.add_subject_alt_name_extension((), alt_name)[0][2].split(','):
                 self.assertEqual('DNS:{}'.format(alt_name), sub_alt_name)
 
     def test_validate_csr(self):
-        """check validate_csr returns True for a valid csr"""
+        """check validate_csr returns True for a valid csr for a given csr_info"""
         for csr, csr_info in (
                 (
                         '\n'.join(l.strip() for l in """

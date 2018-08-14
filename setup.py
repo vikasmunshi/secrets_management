@@ -9,7 +9,7 @@ from os import path
 from setuptools import setup
 
 pkg_info = {}
-with open(path.join(path.abspath(path.dirname(__file__)), 'src/version.py')) as version_file:
+with open(path.join(path.abspath(path.dirname(__file__)), 'src/pkg_info.py')) as version_file:
     exec(version_file.read(), pkg_info)
 package_name = pkg_info['__package__']
 package_version = pkg_info['__version__']
