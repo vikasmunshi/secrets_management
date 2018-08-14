@@ -1,17 +1,35 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Library of functions
-"""
+""" Library of common functions """
 from base64 import b64decode, b64encode
+from collections import namedtuple
 from io import BytesIO
+from json import dumps, loads
 from string import ascii_letters, digits
 
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes, random
+from OpenSSL import crypto
 
-__all__ = ('RSA', 'decrypt', 'encrypt', 'get_random_bytes', 'get_random_str', 'random')
+__all__ = ('CSRInfo', 'EncryptedShare', 'RSA', 'Share', 'crypto', 'decrypt', 'encrypt', 'get_random_bytes',
+           'get_random_str', 'random')
+
+# CSRInfo(subject: ((str, str), ...), extensions: ((str, bool, str), ...), subjectAltName: str)
+CSRInfo = namedtuple('CSRInfo', ('subject', 'extensions', 'subjectAltName'))
+CSRInfo.dumps = lambda self: dumps(self._asdict())
+CSRInfo.loads = staticmethod(lambda json_str: CSRInfo(**{k: v if k == 'subjectAltName' else tuple(tuple(i) for i in v)
+                                                         for k, v in loads(json_str).items()}))
+
+# EncShare(i:str, p:int, x:int, y:str) # id, modulus, x, enc(y)
+EncryptedShare = namedtuple('EncryptedShare', ('i', 'p', 'x', 'y'))
+EncryptedShare.decrypt = lambda self, pvt_key: Share(self.i, self.p, self.x, int(decrypt(self.y, pvt_key)))
+EncryptedShare.dumps = lambda self: dumps(self._asdict())
+EncryptedShare.loads = staticmethod(lambda json_str: EncryptedShare(**loads(json_str)))
+
+# Share(i:str, p:int, x:int, y:int) # id, modulus, x, y
+Share = namedtuple('Share', ('i', 'p', 'x', 'y'))
+Share.encrypt = lambda self, pub_key: EncryptedShare(self.i, self.p, self.x, encrypt(str(self.y), pub_key))
 
 
 def decrypt(encrypted_message: str, private_key: RSA.RsaKey) -> str:

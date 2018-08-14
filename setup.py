@@ -8,10 +8,10 @@ from os import path
 
 from setuptools import setup
 
+package_name = 'cloak'
 pkg_info = {}
-with open(path.join(path.abspath(path.dirname(__file__)), 'cloak/pkg_info.py')) as version_file:
+with open(path.join(path.abspath(path.dirname(__file__)), '{}/version.py'.format(package_name))) as version_file:
     exec(version_file.read(), pkg_info)
-package_name = pkg_info['__package__']
 package_version = pkg_info['__version__']
 
 setup(

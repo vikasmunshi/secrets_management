@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Library of functions
-"""
-from collections import namedtuple
+""" Shamir's Secret Sharing Algorithm """
 from typing import Optional
 from uuid import uuid4
 
-from Crypto.Random import random
-
-Share = namedtuple('Share', ('i', 'p', 'x', 'y'))
-# Share(i:str, p:int, x:int, y:int) # id, modulus, x, y
+from .primitives import Share, random
 
 __all__ = ('Share', 'split', 'un_split')
 
