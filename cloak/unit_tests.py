@@ -7,7 +7,7 @@ import itertools
 import json
 import unittest
 
-import src
+import cloak
 
 
 class UnitTests(unittest.TestCase):
@@ -18,9 +18,9 @@ class UnitTests(unittest.TestCase):
                            1257787, 1398269, 2976221, 3021377, 6972593, 13466917, 20996011, 24036583, 25964951,
                            30402457, 32582657, 37156667, 42643801, 43112609)  # https://oeis.org/A000043
         for i in (32, 64, 128, 256):
-            x = src.random.StrongRandom().randint(0, 2 ** i)
+            x = cloak.random.StrongRandom().randint(0, 2 ** i)
             self.assertIsInstance(x, int)
-            m, p = src.secret_sharing.find_suitable_mersenne_prime(x)
+            m, p = cloak.secret_sharing.find_suitable_mersenne_prime(x)
             self.assertIsInstance(p, int)
             self.assertLess(x, p)
             self.assertIn(m, mersenne_primes)
@@ -28,16 +28,16 @@ class UnitTests(unittest.TestCase):
     def test__modulo_inverse(self):
         """check modulo_inverse(x, p) ∈ int and x * modulo_inverse(x, p) ≡ 1 mod p"""
         for i in (32, 64, 128, 256):
-            x = src.random.StrongRandom().randint(0, 2 ** i)
-            m, p = src.secret_sharing.find_suitable_mersenne_prime(x)
-            x_inverse = src.secret_sharing.modulo_inverse(x, p)
+            x = cloak.random.StrongRandom().randint(0, 2 ** i)
+            m, p = cloak.secret_sharing.find_suitable_mersenne_prime(x)
+            x_inverse = cloak.secret_sharing.modulo_inverse(x, p)
             self.assertIsInstance(x_inverse, int)
             self.assertEqual(1, (x * x_inverse) % p)
 
     def test__random_str(self):
         """check random_str(x) ∈ str and len(random_str(x)) = x"""
         for i in (0, 32, 64, 128, 256):
-            msg = src.get_random_str(i)
+            msg = cloak.get_random_str(i)
             self.assertIsInstance(msg, str)
             self.assertEqual(i, len(msg))
 
@@ -45,49 +45,49 @@ class UnitTests(unittest.TestCase):
         """check that all permutations of exactly n shares out of m reconstruct the secret and other checks"""
         for n, m in ((2, 3), (3, 5)):
             for i in (1, 32, 64, 128, 256):
-                secret = src.get_random_str(i)
-                shares = json.loads(json.dumps(src.split(secret, n, m)))
+                secret = cloak.get_random_str(i)
+                shares = json.loads(json.dumps(cloak.split(secret, n, m)))
                 self.assertEqual(m, len(shares))
                 for n_shares in itertools.permutations(shares, r=n):
                     for n_shares_less_one in itertools.permutations(n_shares, r=n - 1):
-                        self.assertIsNone(src.un_split(n_shares_less_one))  # one less share returns None
-                    self.assertEqual(secret, src.un_split(n_shares))
+                        self.assertIsNone(cloak.un_split(n_shares_less_one))  # one less share returns None
+                    self.assertEqual(secret, cloak.un_split(n_shares))
         with self.assertRaises(AssertionError) as context:
-            src.split(secret, 3, 2)
+            cloak.split(secret, 3, 2)
         self.assertIn('invalid n of m specification', str(context.exception))
         with self.assertRaises(AssertionError) as context:
-            src.split(secret, 1, 3)
+            cloak.split(secret, 1, 3)
         self.assertIn('invalid n of m specification', str(context.exception))
         with self.assertRaises(AssertionError) as context:
-            src.un_split(tuple(src.Share(i=i, p=n[1], x=n[2], y=n[3]) for i, n in enumerate(shares)))
+            cloak.un_split(tuple(cloak.Share(i=i, p=n[1], x=n[2], y=n[3]) for i, n in enumerate(shares)))
         self.assertIn('shares must be from same batch', str(context.exception))
         with self.assertRaises(AssertionError) as context:
-            src.split('', n, m)
+            cloak.split('', n, m)
         self.assertIn('need a secret to split', str(context.exception))
 
     def test_encrypt_decrypt(self):
         """check decrypt(encrypt(msg)) = msg"""
         for i in (0, 32, 64, 128, 256):
-            rsa_key = src.new_rsa_key()
+            rsa_key = cloak.new_rsa_key()
             pub_key = rsa_key.publickey()
-            msg_str = src.get_random_str(i)
-            enc_msg = src.encrypt(msg_str, pub_key)
+            msg_str = cloak.get_random_str(i)
+            enc_msg = cloak.encrypt(msg_str, pub_key)
             self.assertNotEqual(msg_str, enc_msg)
-            self.assertEqual(msg_str, src.decrypt(enc_msg, rsa_key))
+            self.assertEqual(msg_str, cloak.decrypt(enc_msg, rsa_key))
 
     def test_new__rsa_key(self):
         """check RSA key generation for key-size 1024, 2048, 4096 bits"""
         for i in (1024, 2048, 4096):
-            key = src.new_rsa_key(i)
-            self.assertIsInstance(key, src.RSA.RsaKey)
+            key = cloak.new_rsa_key(i)
+            self.assertIsInstance(key, cloak.RSA.RsaKey)
             self.assertEqual(i, key.size_in_bits())
-            pvt_key = src.pki.crypto.load_privatekey(src.pki.crypto.FILETYPE_PEM, key.export_key())
+            pvt_key = cloak.pki.crypto.load_privatekey(cloak.pki.crypto.FILETYPE_PEM, key.export_key())
             self.assertTrue(pvt_key.check())
 
     def test_validate_add_subject_alt_name_extension(self):
         """check add subjectAltName to extensions formats properly"""
         for alt_name in ('test', 'www.test', 'some.domain.com'):
-            for sub_alt_name in src.pki.add_subject_alt_name_extension((), alt_name)[0][2].split(','):
+            for sub_alt_name in cloak.pki.add_subject_alt_name_extension((), alt_name)[0][2].split(','):
                 self.assertEqual('DNS:{}'.format(alt_name), sub_alt_name)
 
     def test_validate_csr(self):
@@ -114,7 +114,7 @@ class UnitTests(unittest.TestCase):
                         aV3Datj0i8Z/KeVicmvAoyD1R2W5BcTFbs7u3gf8
                         -----END CERTIFICATE REQUEST-----
                         """.splitlines()),
-                        src.CSRInfo(
+                        cloak.CSRInfo(
                             subject=(
                                     ('CN', 'common name'),
                                     ('C', 'xx'),
@@ -130,12 +130,12 @@ class UnitTests(unittest.TestCase):
                             subjectAltName='www.test.org'
                         )),
         ):
-            self.assertTrue(src.validate_csr(csr, csr_info))
+            self.assertTrue(cloak.validate_csr(csr, csr_info))
 
     def test_validate_csr_info(self):
         """check csr validator catches errors in csr_info"""
         for invalid_csr_info in (
-                src.CSRInfo(
+                cloak.CSRInfo(
                     subject=(
                             ('CN', 'common name'),
                             ('C', 'xx'),
@@ -151,7 +151,7 @@ class UnitTests(unittest.TestCase):
                     ),
                     subjectAltName=''
                 ),
-                src.CSRInfo(
+                cloak.CSRInfo(
                     subject=(
                             ('CN', 'xxx'),
                             ('C', 'xx'),
@@ -166,7 +166,7 @@ class UnitTests(unittest.TestCase):
                     ),
                     subjectAltName='www.test, test.org'
                 ),
-                src.CSRInfo(
+                cloak.CSRInfo(
                     subject=(
                             ('CN', 'common name'),
                             ('C', 'XXX'),  # invalid country code
@@ -182,7 +182,7 @@ class UnitTests(unittest.TestCase):
                     ),
                     subjectAltName='www.test, test.org'
                 ),
-                src.CSRInfo(
+                cloak.CSRInfo(
                     subject=(),  # empty subject
                     extensions=(
                             ('keyUsage', True, 'Digital Signature, Key Encipherment'),
@@ -191,12 +191,12 @@ class UnitTests(unittest.TestCase):
                     subjectAltName='www.test, test.org'
                 )
         ):
-            self.assertFalse(src.validate_csr_info(invalid_csr_info))
+            self.assertFalse(cloak.validate_csr_info(invalid_csr_info))
 
     def test_validate_new_csr(self):
         """check csr generated is valid and conforms to inputs"""
         for csr_info in (
-                src.CSRInfo(
+                cloak.CSRInfo(
                     subject=(
                             ('CN', 'common name'),
                             ('C', 'xx'),
@@ -211,7 +211,7 @@ class UnitTests(unittest.TestCase):
                     ),
                     subjectAltName=''
                 ),
-                src.CSRInfo(
+                cloak.CSRInfo(
                     subject=(
                             ('CN', 'xxx'),
                             ('C', 'xx'),
@@ -226,7 +226,7 @@ class UnitTests(unittest.TestCase):
                     ),
                     subjectAltName='www.test.org'
                 ),
-                src.CSRInfo(
+                cloak.CSRInfo(
                     subject=(
                             ('CN', 'xxx'),
                             ('C', 'xx'),
@@ -242,10 +242,10 @@ class UnitTests(unittest.TestCase):
                     subjectAltName='www.test, test.org'
                 )
         ):
-            key, csr = src.new_csr(csr_info, 1024)
+            key, csr = cloak.new_csr(csr_info, 1024)
             self.assertIsInstance(key, str)
             self.assertIsInstance(csr, str)
-            crypto = src.pki.crypto
+            crypto = cloak.pki.crypto
             pvt_key = crypto.load_privatekey(crypto.FILETYPE_PEM, key)
             pub_key = pvt_key.to_cryptography_key().public_key()
             self.assertTrue(pvt_key.check())
@@ -253,4 +253,4 @@ class UnitTests(unittest.TestCase):
             req = crypto.load_certificate_request(crypto.FILETYPE_PEM, csr)
             req_pub_key = req.get_pubkey().to_cryptography_key()
             self.assertEqual(pub_key.public_numbers(), req_pub_key.public_numbers())
-            self.assertTrue(src.validate_csr(csr, csr_info))
+            self.assertTrue(cloak.validate_csr(csr, csr_info))

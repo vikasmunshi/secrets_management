@@ -1,3 +1,6 @@
 # secrets_management
 
-A 'secret' by definition is information that must be kept concealed.
+## install
+
+    pip3 install -e git+https://github.com/vikasmunshi/secrets_management.git#egg=secrets
+    
