@@ -10,76 +10,49 @@ import cloak
 
 class UnitTests(unittest.TestCase):
     csr_info_list = (
-        cloak.CSRInfo(
-            (('CN', 'common name'), ('C', 'xx'), ('ST', 'state'), ('L', 'city'), ('O', 'org'), ('OU', 'org unit')),
-            (('keyUsage', False, 'Digital Signature, Key Encipherment'), ('basicConstraints', False, 'CA:FALSE')),
-            ''),
-        cloak.CSRInfo(
-            (('CN', 'xxx'), ('C', 'xx'), ('ST', 'xx'), ('L', 'x'), ('O', 'o'), ('OU', 'ou')),
-            (('keyUsage', True, 'Digital Signature, Key Encipherment'), ('basicConstraints', False, 'CA:TRUE')),
-            'www.test.org'),
-        cloak.CSRInfo(
-            (('CN', 'xxx'), ('C', 'xx'), ('ST', 'xx'), ('L', 'x'), ('O', 'o'), ('OU', 'ou')),
-            (('keyUsage', True, 'Digital Signature, Key Encipherment'), ('basicConstraints', True, 'CA:TRUE')),
-            'www.test, test.org')
+        {
+            'subject': (('CN', 'name'), ('C', 'xx'), ('ST', 'state'), ('L', 'city'), ('O', 'org'), ('OU', 'org unit')),
+            'extensions': (('keyUsage', False, 'Digital Signature, Key Encipherment'),),
+            'subjectAltName': ''},
+        {
+            'subject': (('CN', 'xxx'), ('C', 'xx'), ('ST', 'xx'), ('L', 'x'), ('O', 'o'), ('OU', 'ou')),
+            'extensions': (('keyUsage', True, 'Digital Signature'), ('basicConstraints', False, 'CA:TRUE')),
+            'subjectAltName': 'www.test.org'},
+        {
+            'subject': (('CN', 'xxx'), ('C', 'xx'), ('ST', 'xx'), ('L', 'x'), ('O', 'o'), ('OU', 'ou')),
+            'extensions': (('keyUsage', True, 'Key Encipherment'), ('basicConstraints', True, 'CA:TRUE')),
+            'subjectAltName': 'www.test, test.org'}
     )
 
     invalid_csr_info_list = (
-        cloak.CSRInfo(
-            subject=(
-                ('CN', 'common name'),
-                ('C', 'xx'),
-                ('ST', 'state'),
-                ('L', 'city'),
-                ('O', 'org'),
-                ('OU', 'org unit'),
-                ('OU', 'org unit 2')  # subject OID must be unique
-            ),
-            extensions=(
-                ('keyUsage', False, 'Digital Signature, Key Encipherment'),
-                ('basicConstraints', False, 'CA:FALSE')
-            ),
-            subjectAltName=''
-        ),
-        cloak.CSRInfo(
-            subject=(
-                ('CN', 'xxx'),
-                ('C', 'xx'),
-                ('ST', 'xx'),
-                ('L', 'x'),
-                ('O', 'o'),
-                ('OU', 'ou')
-            ),
-            extensions=(
-                ('keyusage', True, 'Digital Signature, Key Encipherment'),  # invalid extension
-                ('basicConstraints', True, 'CA:TRUE')
-            ),
-            subjectAltName='www.test, test.org'
-        ),
-        cloak.CSRInfo(
-            subject=(
-                ('CN', 'common name'),
-                ('C', 'XXX'),  # invalid country code
-                ('ST', 'state'),
-                ('L', 'city'),
-                ('O', 'org'),
-                ('OU', 'org unit'),
-                ('OU', 'org unit2')
-            ),
-            extensions=(
-                ('keyUsage', True, 'Digital Signature, Key Encipherment'),
-                ('basicConstraints', True, 'CA:TRUE')
-            ),
-            subjectAltName='www.test, test.org'
-        ),
-        cloak.CSRInfo(
-            subject=(),  # empty subject
-            extensions=(
-                ('keyUsage', True, 'Digital Signature, Key Encipherment'),
-                ('basicConstraints', True, 'CA:TRUE')
-            ),
-            subjectAltName='www.test, test.org'
-        )
+        {
+            'subject': (
+                ('CN', 'common name'), ('C', 'xx'), ('ST', 'state'), ('L', 'city'), ('O', 'org'), ('OU', 'org unit'),
+                ('OU', 'org unit 2')),  # subject OID must be unique
+            'extensions': (('keyUsage', False, 'Digital Signature, Key Encipherment'),
+                           ('basicConstraints', False, 'CA:FALSE')),
+            'subjectAltName': ''
+        },
+        {
+            'subject': (('CN', 'xxx'), ('C', 'xx'), ('ST', 'xx'), ('L', 'x'), ('O', 'o'), ('OU', 'ou')),
+            'extensions': (('keyusage', True, 'Digital Signature, Key Encipherment'),  # invalid extension
+                           ('basicConstraints', True, 'CA:TRUE')),
+            'subjectAltName': 'www.test, test.org'
+        },
+        {
+            'subject': (('CN', 'common name'),
+                        ('C', 'XXX'),  # invalid country code
+                        ('ST', 'state'), ('L', 'city'), ('O', 'org'), ('OU', 'org unit'), ('OU', 'org unit2')),
+            'extensions': (('keyUsage', True, 'Digital Signature, Key Encipherment'),
+                           ('basicConstraints', True, 'CA:TRUE')),
+            'subjectAltName': 'www.test, test.org'
+        },
+        {
+            'subject': (),  # empty subject
+            'extensions': (('keyUsage', True, 'Digital Signature, Key Encipherment'),
+                           ('basicConstraints', True, 'CA:TRUE')),
+            'subjectAltName': 'www.test, test.org'
+        }
     )
 
     sample_csr = (
@@ -118,7 +91,7 @@ class UnitTests(unittest.TestCase):
 
     def test_CSRInfo(self):
         """check CSRInfo is serializable"""
-        for csr_info in self.csr_info_list:
+        for csr_info in tuple(cloak.CSRInfo.loads(json.dumps(c)) for c in self.csr_info_list):
             csr_info_str = csr_info.dumps()
             self.assertIsInstance(csr_info_str, str)
             self.assertEqual(csr_info, cloak.CSRInfo.loads(csr_info_str))
@@ -244,12 +217,12 @@ class UnitTests(unittest.TestCase):
 
     def test_validate_csr_info(self):
         """check csr validator catches errors in csr_info"""
-        for invalid_csr_info in self.invalid_csr_info_list:
+        for invalid_csr_info in tuple(cloak.CSRInfo.loads(json.dumps(c)) for c in self.invalid_csr_info_list):
             self.assertFalse(cloak.validate_csr_info(invalid_csr_info))
 
     def test_validate_new_csr(self):
         """check csr generated is valid and conforms to inputs"""
-        for csr_info in self.csr_info_list:
+        for csr_info in tuple(cloak.CSRInfo.loads(json.dumps(c)) for c in self.csr_info_list):
             key = cloak.new_rsa_key(1024)
             csr = cloak.new_csr(csr_info, key)
             self.assertIsInstance(csr, str)
