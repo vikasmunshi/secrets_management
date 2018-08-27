@@ -234,5 +234,9 @@ class UnitTests(unittest.TestCase):
             self.assertTrue(cloak.validate_csr(csr, csr_info))
 
 
+print(__name__)
+
 if __name__ == '__main__':
+    print("Starting Unit Tests")
     unittest.main(verbosity=2)
+    print("Finished Unit Tests")
