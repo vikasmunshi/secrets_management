@@ -232,3 +232,7 @@ class UnitTests(unittest.TestCase):
             self.assertEqual(key.n, req_pub_key.n)
             self.assertEqual(key.e, req_pub_key.e)
             self.assertTrue(cloak.validate_csr(csr, csr_info))
+
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)
