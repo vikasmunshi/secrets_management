@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-""" Unit tests for cloak """
+""" Unit tests for cloak.secret_sharing """
 import itertools
 import json
 import unittest

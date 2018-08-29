@@ -14,11 +14,18 @@ package_version = '0.1.7'
 with open(path.join(path.dirname(__file__), 'requirements.txt')) as rf:
     package_requirements = rf.readlines()
 
-version_line = '__version__ = \'{}\'\n'.format(package_version)
-with open(path.join(path.dirname(__file__), package_name, 'version.py')) as vf:
-    version_file = [version_line if l.startswith('__version__') else l for l in vf.readlines()]
-with open(path.join(path.dirname(__file__), package_name, 'version.py'), 'w') as vf:
-    vf.writelines(version_file)
+
+def update_version(filename):
+    version_line = '__version__ = \'{}\'\n'.format(package_version)
+    with open(filename) as vf:
+        version_file = [version_line if l.startswith('__version__') else l for l in vf.readlines()]
+    with open(filename, 'w') as vf:
+        vf.writelines(version_file)
+
+
+for fn in (path.join(path.dirname(__file__), package_name, '__init__.py'),
+           path.join(path.dirname(__file__), package_name, 'tests', '__init__.py')):
+    update_version(fn)
 
 setup(
     author='Vikas Munshi',
