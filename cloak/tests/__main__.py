@@ -2,10 +2,13 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+from .__init__ import __version__
 from .core import UnitTestsCore
 from .pki import UnitTestsPKI
 from .secret_sharing import UnitTestsSecretSharing
 from .version import UnitTestsVersion
+
+print('Running Unit Tests Version {}'.format(__version__))
 
 suite = unittest.TestSuite()
 

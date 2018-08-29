@@ -5,7 +5,7 @@
 from os import path
 
 package_name = 'cloak'
-package_version = '0.2.0'
+package_version = '0.2.2'
 
 
 def update_version(filename: str, version_line_identifier: str) -> None:
