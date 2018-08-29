@@ -9,23 +9,6 @@ import cloak
 
 
 class UnitTestsSecretSharing(unittest.TestCase):
-    sample_shares = (
-        cloak.Share(i='6046ea4c-32a5-47a1-be00-be74110aa566', p=107, x=15288, y=39035651000266523388257098428752),
-        cloak.Share(i='6046ea4c-32a5-47a1-be00-be74110aa566', p=107, x=102107, y=85125624943142962423672069361793),
-        cloak.Share(i='6046ea4c-32a5-47a1-be00-be74110aa566', p=107, x=277117, y=115567609181130133573148417181602),
-        cloak.Share(i='6046ea4c-32a5-47a1-be00-be74110aa566', p=107, x=628607, y=156452236128381489434170869187611)
-    )
-
-    def test_EncryptedShare(self):
-        """check EncryptedShare is serializable"""
-        for share in self.sample_shares:
-            key = cloak.new_rsa_key(2048)
-            enc_share = share.encrypt(key.publickey())
-            self.assertIsInstance(enc_share.y, str)
-            enc_share_str = enc_share.dumps()
-            self.assertIsInstance(enc_share_str, str)
-            self.assertEqual(share, cloak.EncryptedShare.loads(enc_share_str).decrypt(key))
-
     def test_find_suitable_mersenne_prime(self):
         """check find_suitable_mersenne_prime(x) returns a tuple (m, p = 2**m -1) such that p is just larger than x"""
         mersenne_primes = (2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521, 607, 1279, 2203, 2281, 3217, 4253, 4423,
@@ -33,7 +16,7 @@ class UnitTestsSecretSharing(unittest.TestCase):
                            1257787, 1398269, 2976221, 3021377, 6972593, 13466917, 20996011, 24036583, 25964951,
                            30402457, 32582657, 37156667, 42643801, 43112609)  # https://oeis.org/A000043
         for i in (32, 64, 128, 256):
-            x = cloak.random.StrongRandom().randint(0, 2 ** i)
+            x = cloak.StrongRandom().randint(0, 2 ** i)
             self.assertIsInstance(x, int)
             m, p = cloak.secret_sharing.find_suitable_mersenne_prime(x)
             self.assertIsInstance(p, int)
@@ -43,7 +26,7 @@ class UnitTestsSecretSharing(unittest.TestCase):
     def test_modulo_inverse(self):
         """check modulo_inverse(x, p) ∈ int and x * modulo_inverse(x, p) ≡ 1 mod p"""
         for i in (32, 64, 128, 256):
-            x = cloak.random.StrongRandom().randint(0, 2 ** i)
+            x = cloak.StrongRandom().randint(0, 2 ** i)
             m, p = cloak.secret_sharing.find_suitable_mersenne_prime(x)
             x_inverse = cloak.secret_sharing.modulo_inverse(x, p)
             self.assertIsInstance(x_inverse, int)
