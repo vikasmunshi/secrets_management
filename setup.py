@@ -9,11 +9,16 @@ from os import path
 from setuptools import setup
 
 package_name = 'cloak'
-with open(path.join(path.dirname(__file__), package_name, 'version.py')) as vf:
-    package_version = [l for l in vf.readlines() if l.startswith('__version__')][0].split('=', 2)[1].strip().strip("'")
+package_version = '0.1.7'
 
 with open(path.join(path.dirname(__file__), 'requirements.txt')) as rf:
     package_requirements = rf.readlines()
+
+version_line = '__version__ = \'{}\'\n'.format(package_version)
+with open(path.join(path.dirname(__file__), package_name, 'version.py')) as vf:
+    version_file = [version_line if l.startswith('__version__') else l for l in vf.readlines()]
+with open(path.join(path.dirname(__file__), package_name, 'version.py'), 'w') as vf:
+    vf.writelines(version_file)
 
 setup(
     author='Vikas Munshi',
