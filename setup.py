@@ -1,31 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Install utility for package cloak
-"""
+""" Install utility for package cloak """
 
 from os import path
 
 from setuptools import setup
 
 package_name = 'cloak'
-package_version = '0.1.7'
+package_version = '0.2.1'
 
 with open(path.join(path.dirname(__file__), 'requirements.txt')) as rf:
     package_requirements = rf.readlines()
-
-
-def update_version(filename):
-    version_line = '__version__ = \'{}\'\n'.format(package_version)
-    with open(filename) as vf:
-        version_file = [version_line if l.startswith('__version__') else l for l in vf.readlines()]
-    with open(filename, 'w') as vf:
-        vf.writelines(version_file)
-
-
-for fn in (path.join(path.dirname(__file__), package_name, '__init__.py'),
-           path.join(path.dirname(__file__), package_name, 'tests', '__init__.py')):
-    update_version(fn)
 
 setup(
     author='Vikas Munshi',
@@ -41,7 +26,7 @@ setup(
     install_requires=package_requirements,
     license='GNU GPL3',
     long_description=open('README.md').read(),
-    name=package_name,
+    name='{}-{}'.format(package_name, package_version),
     package_dir={package_name: package_name},
     packages=[package_name],
     platforms=['Linux', 'MacOS'],
