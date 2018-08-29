@@ -12,8 +12,8 @@ from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes, random
 from OpenSSL import crypto
 
-__all__ = ('CSRInfo', 'EncryptedShare', 'RSA', 'Share', 'crypto', 'decrypt', 'encrypt', 'get_random_bytes',
-           'get_random_str', 'random')
+__all__ = ('CSRInfo', 'EncryptedShare', 'RSA', 'Share', 'StrongRandom', 'crypto', 'decrypt', 'encrypt',
+           'get_random_bytes', 'get_random_str')
 
 # CSRInfo(subject: ((str, str), ...), extensions: ((str, bool, str), ...), subjectAltName: str)
 CSRInfo = namedtuple('CSRInfo', ('subject', 'extensions', 'subjectAltName'))
@@ -30,6 +30,8 @@ EncryptedShare.loads = staticmethod(lambda json_str: EncryptedShare(**loads(json
 # Share(i:str, p:int, x:int, y:int) # id, modulus, x, y
 Share = namedtuple('Share', ('i', 'p', 'x', 'y'))
 Share.encrypt = lambda self, pub_key: EncryptedShare(self.i, self.p, self.x, encrypt(str(self.y), pub_key))
+
+StrongRandom = random.StrongRandom
 
 
 def decrypt(encrypted_message: str, private_key: RSA.RsaKey) -> str:

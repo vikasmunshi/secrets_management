@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """ Library of PKI functions """
-from .primitives import CSRInfo, RSA, crypto
+from .core import CSRInfo, RSA, crypto
 
 __all__ = ('CSRInfo', 'new_csr', 'new_rsa_key', 'validate_csr', 'validate_csr_info')
 

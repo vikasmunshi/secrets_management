@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Install utility for package cloaked
+Install utility for package cloak
 """
 
 from os import path

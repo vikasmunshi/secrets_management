@@ -4,7 +4,7 @@
 from typing import Optional
 from uuid import uuid4
 
-from .primitives import Share, random
+from .core import Share, StrongRandom
 
 __all__ = ('Share', 'split', 'un_split')
 
@@ -40,7 +40,7 @@ def split(secret: str, recombination_threshold: int, num_shares: int) -> (Share,
     secret_identifier = str(uuid4())
     f_0 = int.from_bytes(secret, byteorder='big', signed=False)
     mersenne, modulus = find_suitable_mersenne_prime(f_0)
-    rand = random.StrongRandom()
+    rand = StrongRandom()
     coefficients = (f_0,) + tuple(rand.randint(1, modulus - 1) for _ in range(recombination_threshold - 1))
     # value of polynomial defined by coefficients at x in modulo modulus
     f_x = lambda x: sum((a * ((x ** i) % modulus) % modulus) for i, a in enumerate(coefficients)) % modulus
