@@ -9,22 +9,30 @@ from os import path
 from setuptools import setup
 
 package_name = 'cloak'
-pkg_info = {}
-with open(path.join(path.abspath(path.dirname(__file__)), '{}/version.py'.format(package_name))) as version_file:
-    exec(version_file.read(), pkg_info)
-package_version = pkg_info['__version__']
+with open(path.join(path.dirname(__file__), package_name, 'version.py')) as vf:
+    package_version = [l for l in vf.readlines() if l.startswith('__version__')][0].split('=', 2)[1].strip().strip("'")
+
+with open(path.join(path.dirname(__file__), 'requirements.txt')) as rf:
+    package_requirements = rf.readlines()
 
 setup(
     author='Vikas Munshi',
     author_email='vikas.munshi@gmail.com',
+    classifiers=[
+        'Programming Language :: Python :: 3.7',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Operating System :: POSIX :: Linux',
+        'Operating System :: MacOS :: MacOS X',
+    ],
     description='Python3 library for managing secrets',
-    install_requires=['pyCryptoDome>=3.6.4', 'pyOpenSSL>=18.0.0'],
+    download_url='https://github.com/vikasmunshi/secrets_management/',
+    install_requires=package_requirements,
     license='GNU GPL3',
     long_description=open('README.md').read(),
     name=package_name,
     package_dir={package_name: package_name},
     packages=[package_name],
-    platforms=['linux'],
+    platforms=['Linux', 'MacOS'],
     python_requires='>=3.6',
     url='https://github.com/vikasmunshi/secrets_management/',
     version=package_version,
