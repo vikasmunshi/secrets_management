@@ -7,7 +7,7 @@ from time import time
 
 base_dirname = path.dirname(__file__)
 package_name = 'cloak'
-package_version = '0.2.' + str(int(time()))
+package_version = '0.2.{}'.format(int(time()) // 3600)
 
 
 def update_egg(filename: str) -> None:
