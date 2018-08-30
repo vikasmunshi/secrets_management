@@ -5,7 +5,7 @@
 from os import path
 
 package_name = 'cloak'
-package_version = '0.2.2'
+package_version = '0.2.4'
 
 
 def update_version(filename: str, version_line_identifier: str) -> None:
@@ -31,9 +31,11 @@ def update_egg(filename: str) -> None:
         outfile.writelines(file_contents)
 
 
-for fn in (path.join(path.dirname(__file__), package_name, '__init__.py'),
-           path.join(path.dirname(__file__), package_name, 'tests', '__init__.py')):
-    update_version(fn, '__version__')
+for file_with_version in (path.join(path.dirname(__file__), package_name, '__init__.py'),
+                          path.join(path.dirname(__file__), package_name, 'tests', '__init__.py')):
+    update_version(file_with_version, '__version__')
 
 update_version(path.join(path.dirname(__file__), 'setup.py'), 'package_version')
-update_egg(path.join(path.dirname(__file__), 'Dockerfile'))
+
+for file_with_egg in (path.join(path.dirname(__file__), 'Dockerfile'), path.join(path.dirname(__file__), 'README.md')):
+    update_egg(file_with_egg)

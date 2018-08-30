@@ -1,6 +1,11 @@
 # secrets_management
-
 ## install
-
-    pip3 install -e git+https://github.com/vikasmunshi/secrets_management.git#egg=cloak
+### source
+    git clone https://github.com/vikasmunshi/secrets_management.git
+    python3 -m pip install -e secrets_management
+### pip
+    python3 -m pip install -e git+https://github.com/vikasmunshi/secrets_management.git#egg=cloak-0.2.4
+### docker
+    curl https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/Dockerfile -o Dockerfile
+    docker build -t cloak . && docker run --name cloak cloak 
     
