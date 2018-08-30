@@ -3,22 +3,16 @@
 """ Update Version """
 
 from os import path
+from time import time
 
-package_name = 'cloak'
-package_version = '0.2.4'
-
-
-def update_version(filename: str, version_line_identifier: str) -> None:
-    version_line = '{} = \'{}\'\n'.format(version_line_identifier, package_version)
-    with open(filename) as infile:
-        file_contents = [version_line if l.startswith(version_line_identifier) else l for l in infile.readlines()]
-    with open(filename, 'w') as outfile:
-        outfile.writelines(file_contents)
+_base_dirname = path.dirname(__file__)
+_package_name = 'cloak'
+_package_version = '0.2.' + str(int(time()))
 
 
 def update_egg(filename: str) -> None:
-    egg = '#egg={}-{}\n'.format(package_name, package_version)
-    egg_identifier = '#egg={}-'.format(package_name)
+    egg = '#egg={}-{}\n'.format(_package_name, _package_version)
+    egg_identifier = '#egg={}-'.format(_package_name)
 
     def update_egg_info(line: str) -> str:
         if egg_identifier in line:
@@ -31,11 +25,19 @@ def update_egg(filename: str) -> None:
         outfile.writelines(file_contents)
 
 
-for file_with_version in (path.join(path.dirname(__file__), package_name, '__init__.py'),
-                          path.join(path.dirname(__file__), package_name, 'tests', '__init__.py')):
-    update_version(file_with_version, '__version__')
+def update_version(filename: str, version_line_identifier: str) -> None:
+    version_line = '{} = \'{}\'\n'.format(version_line_identifier, _package_version)
+    with open(filename) as infile:
+        file_contents = [version_line if l.startswith(version_line_identifier) else l for l in infile.readlines()]
+    with open(filename, 'w') as outfile:
+        outfile.writelines(file_contents)
 
-update_version(path.join(path.dirname(__file__), 'setup.py'), 'package_version')
 
-for file_with_egg in (path.join(path.dirname(__file__), 'Dockerfile'), path.join(path.dirname(__file__), 'README.md')):
+for file_with_egg in (path.join(_base_dirname, 'Dockerfile'), path.join(_base_dirname, 'README.md')):
     update_egg(file_with_egg)
+
+for file_with_version, identifier_text in (
+        (path.join(_base_dirname, _package_name, '__init__.py'), '__version__'),
+        (path.join(_base_dirname, _package_name, 'tests', '__init__.py'), '__version__'),
+        (path.join(_base_dirname, 'setup.py'), 'package_version')):
+    update_version(file_with_version, identifier_text)
