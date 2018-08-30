@@ -7,7 +7,7 @@ from os import path
 from setuptools import setup
 
 package_name = 'cloak'
-package_version = '0.2.1535652835'
+package_version = '0.2.1535662599'
 
 with open(path.join(path.dirname(__file__), 'requirements.txt')) as rf:
     package_requirements = rf.readlines()
