@@ -4,10 +4,10 @@
 
 from os import path
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 package_name = 'cloak'
-package_version = '0.3.4271263'
+package_version = '0.3.427126'
 
 with open(path.join(path.dirname(__file__), 'requirements.txt')) as rf:
     package_requirements = rf.readlines()
@@ -28,7 +28,7 @@ setup(
     long_description=open('README.md').read(),
     name='{}-{}'.format(package_name, package_version),
     package_dir={package_name: package_name},
-    packages=[package_name],
+    packages=find_packages(),
     platforms=['Linux', 'MacOS'],
     python_requires='>=3.7',
     url='https://github.com/vikasmunshi/secrets_management/',
