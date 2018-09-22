@@ -37,6 +37,8 @@ from .split import (
     un_split,
 )
 
+from .tests.__main__ import run_tests
+
 __all__ = (
     'BasicConstraints',
     'KeyUsage',
@@ -57,6 +59,7 @@ __all__ = (
     'rsa_pub_key_from_file',
     'rsa_pub_key_to_file',
     'rsa_pub_key_to_str',
+    'run_tests',
     'Share',
     'ShareEncrypted',
     'split',
