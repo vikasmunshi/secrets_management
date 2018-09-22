@@ -1,3 +1,3 @@
 FROM python:3.7
-RUN python3 -m pip install -e git+https://github.com/vikasmunshi/secrets_management.git#egg=cloak-0.3.427125
+RUN python3 -m pip install -e git+https://github.com/vikasmunshi/secrets_management.git#egg=cloak-0.3.427126
 CMD ["python3", "-i", "-c", "import cloak"]

@@ -4,7 +4,7 @@
 
 from os import path
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 package_name = 'cloak'
 package_version = '0.3.427126'
@@ -27,8 +27,8 @@ setup(
     license='GNU GPL3',
     long_description=open('README.md').read(),
     name='{}-{}'.format(package_name, package_version),
-    package_dir={package_name: package_name, package_name + '.tests': package_name + '/tests'},
-    packages=[package_name, package_name + '.tests'],
+    package_dir={package_name: package_name},
+    packages=find_packages(),
     platforms=['Linux', 'MacOS'],
     python_requires='>=3.7',
     url='https://github.com/vikasmunshi/secrets_management/',
