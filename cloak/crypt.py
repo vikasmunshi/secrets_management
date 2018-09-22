@@ -20,9 +20,11 @@ __all__ = (
     'rsa_decrypt',
     'rsa_encrypt',
     'rsa_key_from_file',
+    'rsa_key_from_str',
     'rsa_key_to_file',
     'rsa_key_to_str',
     'rsa_pub_key_from_file',
+    'rsa_pub_key_from_str',
     'rsa_pub_key_to_file',
     'rsa_pub_key_to_str',
 )
@@ -113,11 +115,15 @@ def rsa_encrypt(short_message: bytes, public_key: rsa.RSAPublicKey) -> bytes:
 
 def rsa_key_from_file(filename: str) -> rsa.RSAPrivateKey:
     with open(filename) as infile:
-        return serialization.load_pem_private_key(
-            data=infile.read().encode(),
-            password=None,
-            backend=backend
-        )
+        return rsa_key_from_str(key_str=infile.read())
+
+
+def rsa_key_from_str(key_str: str) -> rsa.RSAPrivateKey:
+    return serialization.load_pem_private_key(
+        data=key_str.encode(),
+        password=None,
+        backend=backend
+    )
 
 
 def rsa_key_to_file(filename: str, private_key: rsa.RSAPrivateKey) -> None:
@@ -135,10 +141,14 @@ def rsa_key_to_str(private_key: rsa.RSAPrivateKey) -> str:
 
 def rsa_pub_key_from_file(filename: str) -> rsa.RSAPublicKey:
     with open(filename) as infile:
-        return serialization.load_ssh_public_key(
-            data=infile.read().encode(),
-            backend=backend
-        )
+        return rsa_pub_key_from_str(pub_key_str=infile.read())
+
+
+def rsa_pub_key_from_str(pub_key_str: str) -> rsa.RSAPublicKey:
+    return serialization.load_ssh_public_key(
+        data=pub_key_str.encode(),
+        backend=backend
+    )
 
 
 def rsa_pub_key_to_file(filename: str, public_key: rsa.RSAPublicKey) -> None:

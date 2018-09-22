@@ -12,9 +12,11 @@ from .crypt import (
     rsa_decrypt,
     rsa_encrypt,
     rsa_key_from_file,
+    rsa_key_from_str,
     rsa_key_to_file,
     rsa_key_to_str,
     rsa_pub_key_from_file,
+    rsa_pub_key_from_str,
     rsa_pub_key_to_file,
     rsa_pub_key_to_str,
 )
@@ -53,9 +55,11 @@ __all__ = (
     'rsa_decrypt',
     'rsa_encrypt',
     'rsa_key_from_file',
+    'rsa_key_from_str',
     'rsa_key_to_file',
     'rsa_key_to_str',
     'rsa_pub_key_from_file',
+    'rsa_pub_key_from_str',
     'rsa_pub_key_to_file',
     'rsa_pub_key_to_str',
     'Share',
@@ -70,4 +74,4 @@ __author__ = 'Vikas Munshi'
 __email__ = 'vikas.munshi@gmail.com'
 __license__ = 'GNU GPL3'
 __package__ = path.basename(path.dirname(path.abspath(__file__)))
-__version__ = '0.3.25627601'
+__version__ = '0.3.25627621'
