@@ -9,7 +9,7 @@ base_dirname = path.dirname(path.abspath(__file__))
 major_version = 0
 minor_version = 3
 package_name = 'cloak'
-package_version = '{}.{}.{}'.format(major_version, minor_version, int(time()) // 3600)
+package_version = '{}.{}.{}'.format(major_version, minor_version, int(time()) // 60)
 
 
 def update_egg(filename: str) -> None:
