@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """ Library of secrets management functions """
 from os import path
+
 from .crypt import (
     decrypt,
     encrypt,
@@ -36,8 +37,7 @@ from .split import (
     split,
     un_split,
 )
-
-from .tests.__main__ import run_tests
+from .tests import run_tests
 
 __all__ = (
     'BasicConstraints',
@@ -72,4 +72,4 @@ __author__ = 'Vikas Munshi'
 __email__ = 'vikas.munshi@gmail.com'
 __license__ = 'GNU GPL3'
 __package__ = path.basename(path.dirname(path.abspath(__file__)))
-__version__ = '0.3.25627585'
+__version__ = '0.3.25627588'
