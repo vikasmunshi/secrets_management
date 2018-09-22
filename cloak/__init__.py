@@ -37,7 +37,6 @@ from .split import (
     split,
     un_split,
 )
-from .tests import run_tests
 
 __all__ = (
     'BasicConstraints',
@@ -59,7 +58,6 @@ __all__ = (
     'rsa_pub_key_from_file',
     'rsa_pub_key_to_file',
     'rsa_pub_key_to_str',
-    'run_tests',
     'Share',
     'ShareEncrypted',
     'split',
@@ -72,4 +70,4 @@ __author__ = 'Vikas Munshi'
 __email__ = 'vikas.munshi@gmail.com'
 __license__ = 'GNU GPL3'
 __package__ = path.basename(path.dirname(path.abspath(__file__)))
-__version__ = '0.3.25627588'
+__version__ = '0.3.25627594'
