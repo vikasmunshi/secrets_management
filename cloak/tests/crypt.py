@@ -83,6 +83,6 @@ class UnitTestsCrypt(unittest.TestCase):
             rsa_pub_key = rsa_key.public_key()
             rsa_key_str = cloak.rsa_key_to_str(private_key=rsa_key)
             self.assertIsInstance(rsa_key_str, str)
-            self.assertEqual(rsa_key, cloak.rsa)
+
             rsa_pub_key_str = cloak.rsa_pub_key_to_str(public_key=rsa_pub_key)
             self.assertIsInstance(rsa_pub_key_str, str)

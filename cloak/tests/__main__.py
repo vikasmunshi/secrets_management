@@ -8,6 +8,10 @@ from .csr import UnitTestsCSR
 from .policy import UnitTestsPolicy
 from .split import UnitTestsSplit
 
+__all__ = (
+    'run_tests',
+)
+
 
 def run_tests():
     suite = unittest.TestSuite()
