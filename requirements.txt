@@ -1,2 +1,1 @@
-pyCryptoDome>=3.6.4
-pyOpenSSL>=18.0.0
+cryptography==2.3.1

@@ -7,7 +7,7 @@ from time import time
 
 base_dirname = path.dirname(path.abspath(__file__))
 major_version = 0
-minor_version = 2
+minor_version = 3
 package_name = 'cloak'
 package_version = '{}.{}.{}'.format(major_version, minor_version, int(time()) // 3600)
 
