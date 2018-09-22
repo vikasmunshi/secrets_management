@@ -70,4 +70,4 @@ __author__ = 'Vikas Munshi'
 __email__ = 'vikas.munshi@gmail.com'
 __license__ = 'GNU GPL3'
 __package__ = path.basename(path.dirname(path.abspath(__file__)))
-__version__ = '0.3.25627600'
+__version__ = '0.3.25627601'
