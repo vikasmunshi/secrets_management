@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """ Update Version """
-
+from sys import argv
 from os import path
 from time import time
 
 base_dirname = path.dirname(path.abspath(__file__))
 major_version = 0
+manual_version_correction = int(argv[1] if len(argv) > 1 else 0)
 minor_version = 3
 package_name = 'cloak'
-package_version = '{}.{}.{}'.format(major_version, minor_version, int(time()) // 3600)
+package_version = '{}.{}.{}'.format(major_version, minor_version, (int(time()) // 3600) + manual_version_correction)
 
 
 def update_egg(filename: str) -> None:

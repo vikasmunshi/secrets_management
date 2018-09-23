@@ -22,7 +22,7 @@ __all__ = (
 
 def certificate_signing_request_main(policy_filename: str, key_filename: str, csr_filename: str, ) -> None:
     key_str, csr_str = str_dump_new_certificate_signing_request_and_key(Policy.from_file(policy_filename))
-    with  open(key_filename, 'w') as key_file, open(csr_filename, 'w') as csr_file:
+    with open(key_filename, 'w') as key_file, open(csr_filename, 'w') as csr_file:
         key_file.write(key_str)
         csr_file.write(csr_str)
 

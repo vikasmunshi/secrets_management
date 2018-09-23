@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """ Version Info """
+from os import path
+
 import cloak
 
 
@@ -55,11 +57,11 @@ if __name__ == '__main__':
     elif 'normalize'.startswith(argv[1].lower()):
         normalize_template(argv[2] if len(argv) > 2 else 'template.json')
     elif 'csr' == argv[1] and len(argv) == 3:
-        from os.path import splitext
-
         policy_file = argv[2]
-        key_file = splitext(policy_file)[0] + '.key'
-        csr_file = splitext(policy_file)[0] + '.csr'
+        if not path.exists(policy_file):
+            policy_file = path.join(path.abspath(path.dirname(__file__)), policy_file)
+        key_file = path.splitext(policy_file)[0] + '.key'
+        csr_file = path.splitext(policy_file)[0] + '.csr'
         cloak.certificate_signing_request_main(policy_file, key_file, csr_file)
     else:
         print(usage)
