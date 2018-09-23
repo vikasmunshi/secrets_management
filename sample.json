@@ -1,0 +1,17 @@
+{
+  "subject": [
+    ["commonName", "Test Common Name"],
+    ["organizationName", "Test Org"],
+    ["organizationalUnitName", "Test OU 1"],
+    ["organizationalUnitName", "Test OU 2"]
+  ],
+  "subject_alt_names": ["www.test.org", "test.org"],
+  "key_usage": {
+    "digital_signature": true,
+    "key_encipherment": true,
+    "data_encipherment": true,
+    "key_agreement": true
+  },
+  "key_size": 2048,
+  "hash_algorithm": "SHA256"
+}
