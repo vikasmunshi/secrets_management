@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """ Shamir's Secret Sharing Algorithm """
 from __future__ import annotations
+from typing import Optional
 
 from dataclasses import dataclass
 from secrets import SystemRandom
@@ -9,7 +10,7 @@ from uuid import uuid4
 
 from cryptography.hazmat.primitives.asymmetric import rsa
 
-from .crypt import decrypt, encrypt, mersenne_prime
+from .crypt import decrypt, encrypt, mersenne_prime, mersenne_primes
 
 __all__ = (
     'Share',
@@ -60,9 +61,8 @@ class ShareEncrypted(Share):
 
 def _find_suitable_mersenne_prime(x: int) -> (int, int):
     """smallest (mersenne) prime larger than x; raise ValueError ix x is larger than 2^9941 -1"""
-    for m, p in ((m, (2 ** m) - 1) for m in (107, 127, 521, 607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941)):
-        # https://oeis.org/A000043
-        if p > x:
+    for m, p in mersenne_primes():
+        if m > 100 and p > x:
             return m, p
     raise ValueError('too large value {}'.format(x))
 
@@ -102,10 +102,10 @@ def split(secret: str, recombination_threshold: int, num_shares: int) -> (Share,
     return tuple(Share(id=secret_identifier, mersenne=mersenne, x=x, y=f_x(x)) for x in x_values)
 
 
-def un_split(shares: (Share, ...)) -> str:
+def un_split(shares: (Share, ...)) -> Optional[str]:
     """reconstruct secret from shares"""
     # https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing
-    assert shares[0].count_distinct_shares(shares[1:]) == len(shares), 'Hmmm... all shares are not unique'
+    assert shares[0].count_distinct_shares(shares[1:]) == len(shares), 'Hmmm... shares mismatch or not unique'
     prime_modulus = shares[0].modulus
     num_shares_to_recombine = len(shares)
     # https://en.wikipedia.org/wiki/Polynomial_interpolation
@@ -120,4 +120,4 @@ def un_split(shares: (Share, ...)) -> str:
     try:
         return bytes.fromhex(format(f_0, 'x')).decode()
     except (UnicodeDecodeError, ValueError):
-        return ''
+        return None

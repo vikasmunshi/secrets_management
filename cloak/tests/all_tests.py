@@ -6,7 +6,8 @@ import unittest
 from .crypt import UnitTestsCrypt
 from .csr import UnitTestsCSR
 from .policy import UnitTestsPolicy
-from .split import UnitTestsSplit
+from .secret_sharing import UnitTestsSplit
+from .version import UnitTestsVersion
 
 __all__ = (
     'run_tests',
@@ -16,7 +17,7 @@ __all__ = (
 def run_tests():
     suite = unittest.TestSuite()
 
-    for test in (UnitTestsCrypt, UnitTestsCSR, UnitTestsPolicy, UnitTestsSplit):
+    for test in (UnitTestsCrypt, UnitTestsCSR, UnitTestsPolicy, UnitTestsSplit, UnitTestsVersion):
         suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(test))
 
     unittest.TextTestRunner(verbosity=2).run(suite)

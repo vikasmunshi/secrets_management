@@ -1,79 +1,155 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-""" test data """
+""" test data for cloak.tests"""
+import cloak
 
-csr_info_list = (
-    {
-        'subject': (('CN', 'name'), ('C', 'xx'), ('ST', 'state'), ('L', 'city'), ('O', 'org'), ('OU', 'org unit')),
-        'extensions': (('keyUsage', False, 'Digital Signature, Key Encipherment'),),
-        'subjectAltName': ''},
-    {
-        'subject': (('CN', 'xxx'), ('C', 'xx'), ('ST', 'xx'), ('L', 'x'), ('O', 'o'), ('OU', 'ou')),
-        'extensions': (('keyUsage', True, 'Digital Signature'), ('basicConstraints', False, 'CA:TRUE')),
-        'subjectAltName': 'www.test.org'},
-    {
-        'subject': (('CN', 'xxx'), ('C', 'xx'), ('ST', 'xx'), ('L', 'x'), ('O', 'o'), ('OU', 'ou')),
-        'extensions': (('keyUsage', True, 'Key Encipherment'), ('basicConstraints', True, 'CA:TRUE')),
-        'subjectAltName': 'www.test, test.org'}
+rsa_key = cloak.new_rsa_key()
+rsa_pub_key = rsa_key.public_key()
+
+rsa_keys = tuple(cloak.new_rsa_key() for _ in range(5))
+rsa_pub_keys = tuple(key.public_key() for key in rsa_keys)
+rsa_key_pairs = zip(rsa_keys, rsa_pub_keys)
+
+random_strings = tuple(cloak.random_str(2 ** x) for x in range(9))
+
+test_policies = (
+    cloak.Policy(
+        subject=(
+            ('commonName', 'test common name'),
+            ('organizationName', 'test org'),
+            ('organizationalUnitName', 'test ou'),
+        ),
+        subject_alt_names=('www.test.org', 'www.test.net'),
+        key_usage=cloak.KeyUsage(digital_signature=True, key_encipherment=True),
+        basic_constraints=cloak.BasicConstraints(ca=False)
+    ),
+    cloak.Policy(
+        subject=(
+            ('commonName', 'test common name'),
+            ('organizationName', 'test org'),
+            ('organizationalUnitName', 'test ou 1'),
+            ('organizationalUnitName', 'test ou 2'),
+        ),
+        subject_alt_names=('www.test.org', 'www.test.net'),
+        key_usage=cloak.KeyUsage(digital_signature=True, key_encipherment=True)
+    ),
 )
 
-invalid_csr_info_list = (
+valid_policy_dicts = (
     {
         'subject': (
-            ('CN', 'common name'), ('C', 'xx'), ('ST', 'state'), ('L', 'city'), ('O', 'org'), ('OU', 'org unit'),
-            ('OU', 'org unit 2')),  # subject OID must be unique
-        'extensions': (('keyUsage', False, 'Digital Signature, Key Encipherment'),
-                       ('basicConstraints', False, 'CA:FALSE')),
-        'subjectAltName': ''
+            ('commonName', 'test common name'),
+            ('organizationName', 'test org'),
+            ('organizationalUnitName', 'test ou')
+        ),
+        'subject_alt_names': ('www.test.org', 'www.test.net'),
+        'key_usage': {'digital_signature': True, 'key_encipherment': True},
+        'basic_constraints': {'ca': False, 'path_length': None},
+        'key_size': 2048,
+        'hash_algorithm': 'SHA256'
     },
     {
-        'subject': (('CN', 'xxx'), ('C', 'xx'), ('ST', 'xx'), ('L', 'x'), ('O', 'o'), ('OU', 'ou')),
-        'extensions': (('keyusage', True, 'Digital Signature, Key Encipherment'),  # invalid extension
-                       ('basicConstraints', True, 'CA:TRUE')),
-        'subjectAltName': 'www.test, test.org'
+        'subject': (
+            ('commonName', 'test ca name'),
+            ('organizationName', 'test org'),
+            ('organizationalUnitName', 'test ou')
+        ),
+        'subject_alt_names': ('www.test.org', 'www.test.net'),
+        'key_usage': {'digital_signature': True, 'key_encipherment': True},
+        'basic_constraints': {'ca': True, 'path_length': 3},
+        'key_size': 2048,
+        'hash_algorithm': 'SHA256'
     },
     {
-        'subject': (('CN', 'common name'),
-                    ('C', 'XXX'),  # invalid country code
-                    ('ST', 'state'), ('L', 'city'), ('O', 'org'), ('OU', 'org unit'), ('OU', 'org unit2')),
-        'extensions': (('keyUsage', True, 'Digital Signature, Key Encipherment'),
-                       ('basicConstraints', True, 'CA:TRUE')),
-        'subjectAltName': 'www.test, test.org'
+        'subject': (
+            ('commonName', 'test common name'),
+            ('organizationName', 'test org'),
+            ('organizationalUnitName', 'test ou 1'),
+            ('organizationalUnitName', 'test ou 2')
+        ),
+        'subject_alt_names': ('www.test.org', 'www.test.net'),
+        'key_usage': {'digital_signature': True, 'key_encipherment': True}
     },
     {
-        'subject': (),  # empty subject
-        'extensions': (('keyUsage', True, 'Digital Signature, Key Encipherment'),
-                       ('basicConstraints', True, 'CA:TRUE')),
-        'subjectAltName': 'www.test, test.org'
-    }
+        'subject': (
+            ('commonName', 'test common name 3'),
+            ('organizationName', 'test org'),
+            ('organizationalUnitName', 'test ou 1'),
+        ),
+        'subject_alt_names': ('www.test.org', 'www.test.net'),
+        'key_usage': {'key_agreement': True, 'encipher_only': True}
+    },
 )
 
-sample_csr = (
-    '\n'.join(l.strip() for l in """
-        -----BEGIN CERTIFICATE REQUEST-----
-        MIIC6jCCAdICAQMwYzEUMBIGA1UEAwwLY29tbW9uIG5hbWUxCzAJBgNVBAYTAnh4
-        MQ4wDAYDVQQIDAVzdGF0ZTENMAsGA1UEBwwEY2l0eTEMMAoGA1UECgwDb3JnMREw
-        DwYDVQQLDAhvcmcgdW5pdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB
-        AM86fLi2dz82Ge0ueM19JpybWD4AfwZYtSnQhm+JyOIU6DlqYb2R58oONsBhhiAm
-        m2GYONIY0sYa7g9Yz6nXbGdHE0p+CTUZ84fwc2vydxB+wN/fdaD4dIx+pzQWsrLD
-        Q/A2KCmBTk4/nSftDGWgWM1f/Q+oJbVcw4kuUyaIsvGB/902tiQQRdbs1mLkiCKp
-        kLjR5oDpQciiDSnC52qdSk4w4u9zsSXNtthtVkNrmjbPELjLrr2zLyXHJhkdE9Ig
-        x64PdocLjbQyjMXubiR2ZJts6m/ciMXu9NoQoKasyueazbNfLgaJlp56YlCW6Z1k
-        9zhLm0UUzzOsrLhKyCH1PgECAwEAAaBCMEAGCSqGSIb3DQEJDjEzMDEwCwYDVR0P
-        BAQDAgWgMAkGA1UdEwQCMAAwFwYDVR0RBBAwDoIMd3d3LnRlc3Qub3JnMA0GCSqG
-        SIb3DQEBCwUAA4IBAQA/yIYuhAJe46xRL8QEcvQC4Y2KliM1TJPKjoN37Tsc/JUV
-        ou3JVsqU2tHZRUY4CWHCB1adBddRgpIoZyOWCknrB8A73cmI3J8AlBEAGVWtBtrF
-        YJfv9EKoLuq9Y9Z2RkwH18GsQ/DChJub0kcy3ldV+d9jLF+gijsuO/aYt0Rm5aXr
-        5HnQH60S82875O+9cBxeSUK5P5uI8GEaj75i0W9Z1TKvakJXdgVP5vfHq/kw2Mjw
-        Sp55ZsvFUNWHSyDc0U0WhVzUVm8BISY/bWIXGPKDmcvRR8rV90yoiAT3oPpuO6Lw
-        aV3Datj0i8Z/KeVicmvAoyD1R2W5BcTFbs7u3gf8
-        -----END CERTIFICATE REQUEST-----
-        """.splitlines()),
-    (
-        (('CN', 'common name'), ('C', 'xx'), ('ST', 'state'), ('L', 'city'), ('O', 'org'), ('OU', 'org unit')),
-        (('keyUsage', False, 'Digital Signature, Key Encipherment'), ('basicConstraints', False, 'CA:FALSE')),
-        'www.test.org'
-    )
+invalid_policy_dicts = (
+    {
+        'subject': (
+            ('commonName2', 'test common name'),  # invalid subject attribute
+            ('organizationName', 'test org'),
+            ('organizationalUnitName', 'test ou')
+        ),
+        'subject_alt_names': ('www.test.org', 'www.test.net'),
+        'key_usage': {'digital_signature': True, 'key_encipherment': True},
+        'key_size': 2048,
+        'hash_algorithm': 'SHA256'
+    },
+    {
+        'subject': (
+            ('commonName', 'test common name'),
+            ('organizationName', 'test org'),
+            ('organizationalUnitName', 'test ou')
+        ),
+        'subject_alt_names': ('www.test.org', 'www.test.net'),
+        'key_usage': {'digital_signature': True, 'key_encipherment': True},
+        'key_size': 1024,  # weak key size
+        'hash_algorithm': 'SHA256'
+    },
+    {
+        'subject': (  # empty policy
+            ('businessCategory', ''),
+            ('commonName', ''),
+            ('countryName', ''),
+            ('dnQualifier', ''),
+            ('domainComponent', ''),
+            ('emailAddress', ''),
+            ('generationQualifier', ''),
+            ('givenName', ''),
+            ('jurisdictionCountryName', ''),
+            ('jurisdictionLocalityName', ''),
+            ('jurisdictionStateOrProvinceName', ''),
+            ('localityName', ''),
+            ('organizationalUnitName', ''),
+            ('organizationName', ''),
+            ('postalAddress', ''),
+            ('postalCode', ''),
+            ('pseudonym', ''),
+            ('serialNumber', ''),
+            ('stateOrProvinceName', ''),
+            ('streetAddress', ''),
+            ('surname', ''),
+            ('title', ''),
+            ('userID', ''),
+            ('x500UniqueIdentifier', '')
+        ),
+        'subject_alt_names': ('',),
+        'key_usage': {
+            'digital_signature': False,
+            'content_commitment': False,
+            'key_encipherment': False,
+            'data_encipherment': False,
+            'key_agreement': False,
+            'key_cert_sign': False,
+            'crl_sign': False,
+            'encipher_only': False,
+            'decipher_only': False
+        },
+        'basic_constraints': {
+            'ca': False,
+            'path_length': None
+        },
+        'key_size': 2048,
+        'hash_algorithm': 'SHA256'
+    },
 )
 
 sample_shares = (

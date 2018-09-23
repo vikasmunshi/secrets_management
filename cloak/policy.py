@@ -51,14 +51,14 @@ class Policy:
         policy_errors = self.policy_errors
         assert policy_errors == '', policy_errors
 
-    def dict(self) -> dict:
+    def to_dict(self) -> to_dict:
         return asdict(self, dict_factory=lambda t: {x[0]: x[1] for x in t if x[1]})
 
     @staticmethod
-    def from_dict(dict_obj: dict) -> Policy:
+    def from_dict(dict_obj: to_dict) -> Policy:
         return Policy(
-            subject=tuple(tuple(x) for x in dict_obj['subject']),
-            subject_alt_names=tuple(dict_obj['subject_alt_names']) if dict_obj.get('subject_alt_names') else None,
+            subject=tuple(tuple(x) for x in dict_obj['subject'] if x[1]),
+            subject_alt_names=tuple(x for x in dict_obj.get('subject_alt_names', ()) if x) or None,
             key_usage=KeyUsage(**dict_obj['key_usage']) if dict_obj.get('key_usage') else None,
             basic_constraints=BasicConstraints(**dict_obj.get('basic_constraints', {})),
             key_size=dict_obj.get('key_size', 2048),
@@ -72,7 +72,7 @@ class Policy:
 
     def to_file(self, filename: str) -> None:
         with open(filename, 'w') as outfile:
-            dump(self.dict(), outfile, indent=2)
+            dump(self.to_dict(), outfile, indent=2)
 
     @property
     def policy_errors(self) -> str:
@@ -92,6 +92,12 @@ class Policy:
                 )
                 for attrib in self.subject
             ),
+            '' if all(s[1] != '' for s in self.subject)
+            else 'subject error {}'.format(self.subject),
+            '' if len(self.subject) > 0
+            else 'subject empty error {}'.format(self.subject),
+            '' if self.subject_alt_names is None or all(x != '' for x in self.subject_alt_names)
+            else 'subject alt name error {}'.format(self.subject_alt_names),
             '' if self.key_usage is None or isinstance(self.key_usage, KeyUsage)
             else 'key_usage error {}'.format(self.key_usage),
             '' if isinstance(self.basic_constraints, BasicConstraints)

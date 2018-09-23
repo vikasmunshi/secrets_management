@@ -20,33 +20,30 @@ __all__ = (
 
 
 def check_csr(csr: x509.CertificateSigningRequest, policy: Policy) -> str:
+    """ find all differences (errors) between info in csr and policy, return empty string if no errors"""
     extensions = {OID_NAMES.get(extension.oid, extension.oid): extension.value for extension in csr.extensions}
     # noinspection PyProtectedMember
     return '\n'.join(error for error in (
+        # verify csr signature
         '' if csr.is_signature_valid else 'hmmm... csr signature is not valid!!!',
-
+        # verify signature hash algorithm
         '' if csr.signature_hash_algorithm.name == policy.hash_algorithm.lower() else 'hmmm... wrong hash algorithm!!!',
-
-        '' if policy.subject == tuple((OID_NAMES.get(subject_attrib.oid), subject_attrib.value)
-                                      for subject_attrib in csr.subject)
-        else 'subject mismatch:\n{}\n{}\n'.format(
-            csr.subject,
-            policy.subject
-        ),
-
+        # verify subject matches
+        '' if policy.subject == tuple((OID_NAMES.get(attrib.oid), attrib.value) for attrib in csr.subject)
+        else 'subject mismatch:\n{}\n{}\n'.format(csr.subject, policy.subject),
+        # verify subjectAltName
         '' if policy.subject_alt_names is None and 'subject_alt_names' not in extensions
         else '' if tuple(x.value for x in extensions['subjectAltName']) == policy.subject_alt_names
-        else 'subject_alt_names mismatch csr:\n{}\npolicy:\n{}\n'.format(
-            extensions['subjectAltName'],
-            policy.subject_alt_names
-        ),
-
+        else 'subject_alt_names mismatch:\n{}\n{}\n'.format(extensions['subjectAltName'], policy.subject_alt_names),
+        # verify basicConstraints ca
         '' if extensions['basicConstraints'].ca == policy.basic_constraints.ca
-        else 'basicConstraints ca mismatch csr:\n{}\npolicy:\n{}\n'.format(
-            extensions['basicConstraints'].ca,
-            policy.basic_constraints.ca
-        ),
-
+        else 'basicConstraints ca mismatch:\n{}\n{}\n'.format(extensions['basicConstraints'].ca,
+                                                              policy.basic_constraints.ca),
+        # verify basicConstraints path_length
+        '' if extensions['basicConstraints'].path_length == policy.basic_constraints.path_length
+        else 'basicConstraints path_length mismatch:\n{}\n{}\n'.format(extensions['basicConstraints'].path_length,
+                                                                       policy.basic_constraints.path_length),
+        # verify keyUsage
         '' if policy.key_usage is None and 'keyUsage' not in extensions
         else '' if all((
             extensions['keyUsage'].digital_signature == policy.key_usage.digital_signature,
@@ -59,21 +56,18 @@ def check_csr(csr: x509.CertificateSigningRequest, policy: Policy) -> str:
             extensions['keyUsage']._encipher_only == policy.key_usage.encipher_only,
             extensions['keyUsage']._decipher_only == policy.key_usage.decipher_only,
         ))
-        else 'keyUsage mismatch csr:\n{}\npolicy:\n{}\n'.format(
-            extensions['keyUsage'],
-            policy.key_usage
-        ),
+        else 'keyUsage mismatch:\n{}\n{}\n'.format(extensions['keyUsage'], policy.key_usage),
+        # verify KeySize
+        '' if policy.key_size == csr.public_key().key_size
+        else 'KeySize mismatch:\n{}\n{}\n'.format(csr.public_key().key_size, policy.key_size),
+        # verify KeySize >= 2048
+        '' if csr.public_key().key_size >= 2048 else 'weak key size {}'.format(csr.public_key().key_size)
 
-        '' if extensions['basicConstraints'].path_length == policy.basic_constraints.path_length
-        else 'basicConstraints path_length mismatch csr:\n{}\npolicy:\n{}\n'.format(
-            extensions['basicConstraints'].path_length,
-            policy.basic_constraints.path_length
-        ),
     ) if error != '')
 
 
 def check_csr_str(csr: str, policy: Policy) -> str:
-    return check_csr(csr=x509.load_pem_x509_csr(data=csr, backend=backend), policy=policy)
+    return check_csr(csr=x509.load_pem_x509_csr(data=csr.encode(), backend=backend), policy=policy)
 
 
 def new_certificate_signing_request(policy: Policy, rsa_key: rsa.RSAPrivateKey) -> x509.CertificateSigningRequest:

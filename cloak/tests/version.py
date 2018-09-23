@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-""" Unit tests for cloak.version """
+""" Unit tests for cloak.__version__ """
 import unittest
 
 import cloak
