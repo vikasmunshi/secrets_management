@@ -38,6 +38,12 @@ class UnitTestsCSR(unittest.TestCase):
             ),
         )
 
+    def test_csr_main(self):
+        from tempfile import NamedTemporaryFile
+        with NamedTemporaryFile() as temp_file:
+            filename = temp_file.name
+
+
     def test_check_csr(self):
         for policy in self.test_policies:
             csr = cloak.new_certificate_signing_request(policy=policy, rsa_key=self.rsa_key)

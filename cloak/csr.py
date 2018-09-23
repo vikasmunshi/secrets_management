@@ -12,11 +12,19 @@ from .crypt import new_rsa_key, rsa_key_to_str
 from .policy import Policy, SubjectAttributeOID
 
 __all__ = (
+    'certificate_signing_request_main',
     'check_csr',
     'check_csr_str',
     'new_certificate_signing_request',
     'str_dump_new_certificate_signing_request_and_key',
 )
+
+
+def certificate_signing_request_main(policy_filename: str, key_filename: str, csr_filename: str, ) -> None:
+    key_str, csr_str = str_dump_new_certificate_signing_request_and_key(Policy.from_file(policy_filename))
+    with  open(key_filename, 'w') as key_file, open(csr_filename, 'w') as csr_file:
+        key_file.write(key_str)
+        csr_file.write(csr_str)
 
 
 def check_csr(csr: x509.CertificateSigningRequest, policy: Policy) -> str:

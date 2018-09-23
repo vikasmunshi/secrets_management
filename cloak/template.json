@@ -1,0 +1,46 @@
+{
+  "subject": [
+    ["businessCategory", ""],
+    ["commonName", "Common Name"],
+    ["countryName", ""],
+    ["dnQualifier", ""],
+    ["domainComponent", ""],
+    ["emailAddress", ""],
+    ["generationQualifier", ""],
+    ["givenName", ""],
+    ["jurisdictionCountryName", ""],
+    ["jurisdictionLocalityName", ""],
+    ["jurisdictionStateOrProvinceName", ""],
+    ["localityName", ""],
+    ["organizationalUnitName", ""],
+    ["organizationName", ""],
+    ["postalAddress", ""],
+    ["postalCode", ""],
+    ["pseudonym", ""],
+    ["serialNumber", ""],
+    ["stateOrProvinceName", ""],
+    ["streetAddress", ""],
+    ["surname", ""],
+    ["title", ""],
+    ["userID", ""],
+    ["x500UniqueIdentifier", ""]
+  ],
+  "subject_alt_names": [],
+  "key_usage": {
+    "digital_signature": false,
+    "content_commitment": false,
+    "key_encipherment": false,
+    "data_encipherment": false,
+    "key_agreement": false,
+    "key_cert_sign": false,
+    "crl_sign": false,
+    "encipher_only": false,
+    "decipher_only": false
+  },
+  "basic_constraints": {
+    "ca": false,
+    "path_length": null
+  },
+  "key_size": 2048,
+  "hash_algorithm": "SHA256"
+}

@@ -23,6 +23,7 @@ from .crypt import (
     rsa_pub_key_to_str,
 )
 from .csr import (
+    certificate_signing_request_main,
     check_csr,
     check_csr_str,
     new_certificate_signing_request,
@@ -46,6 +47,7 @@ __all__ = (
     'BasicConstraints',
     'KeyUsage',
     'Policy',
+    'certificate_signing_request_main',
     'check_csr',
     'check_csr_str',
     'decrypt',
@@ -78,4 +80,4 @@ __author__ = 'Vikas Munshi'
 __email__ = 'vikas.munshi@gmail.com'
 __license__ = 'GNU GPL3'
 __package__ = path.basename(path.dirname(path.abspath(__file__)))
-__version__ = '0.3.427145'
+__version__ = '0.3.427146'
