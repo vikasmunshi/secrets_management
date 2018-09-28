@@ -13,7 +13,7 @@ rsa_key_pairs = zip(rsa_keys, rsa_pub_keys)
 random_strings = tuple(cloak.random_str(2 ** x) for x in range(9))
 
 test_policies = (
-    cloak.Policy(
+    cloak.Template(
         subject=(
             ('commonName', 'test common name'),
             ('organizationName', 'test org'),
@@ -23,7 +23,7 @@ test_policies = (
         key_usage=cloak.KeyUsage(digital_signature=True, key_encipherment=True),
         basic_constraints=cloak.BasicConstraints(ca=False)
     ),
-    cloak.Policy(
+    cloak.Template(
         subject=(
             ('commonName', 'test common name'),
             ('organizationName', 'test org'),

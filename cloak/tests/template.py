@@ -6,7 +6,7 @@ import unittest
 import cloak
 
 
-class UnitTestsPolicy(unittest.TestCase):
+class UnitTestsTemplate(unittest.TestCase):
     from .test_data import valid_policy_dicts, invalid_policy_dicts
 
     def test_BasicConstraints(self):
@@ -28,11 +28,11 @@ class UnitTestsPolicy(unittest.TestCase):
     def test_Policy(self):
         for policy_dict in self.invalid_policy_dicts:
             with self.assertRaises(AssertionError):
-                cloak.Policy.from_dict(policy_dict)
+                cloak.Template.from_dict(policy_dict)
 
     def test_Policy_to_from_dict(self):
         for policy_dict in self.valid_policy_dicts:
-            policy = cloak.Policy.from_dict(policy_dict)
+            policy = cloak.Template.from_dict(policy_dict)
             for key in ('subject', 'subject_alt_names', 'key_usage'):
                 self.assertEqual(policy_dict[key], policy.to_dict()[key])
             basic_constraints = policy_dict.get('basic_constraints', {})
@@ -40,20 +40,20 @@ class UnitTestsPolicy(unittest.TestCase):
             self.assertEqual(basic_constraints.get('path_length'), policy.basic_constraints.path_length)
         for policy_dict in self.invalid_policy_dicts:
             with self.assertRaises(AssertionError):
-                cloak.Policy.from_dict(policy_dict)
+                cloak.Template.from_dict(policy_dict)
 
     def test_policy_to_from_file(self):
         from tempfile import NamedTemporaryFile
         with NamedTemporaryFile() as temp_file:
             filename = temp_file.name
             for policy_dict in self.valid_policy_dicts:
-                policy = cloak.Policy.from_dict(policy_dict)
+                policy = cloak.Template.from_dict(policy_dict)
                 policy.to_file(filename=filename)
-                self.assertEqual(policy, cloak.Policy.from_file(filename=filename))
+                self.assertEqual(policy, cloak.Template.from_file(filename=filename))
 
     def test_SubjectAttributeOID(self):
         for attrib in cloak.subject_attribute_names:
-            self.assertIsInstance(cloak.SubjectAttributeOID[attrib].value, cloak.policy.x509.oid.ObjectIdentifier)
+            self.assertIsInstance(cloak.SubjectAttributeOID[attrib].value, cloak.template.x509.oid.ObjectIdentifier)
             self.assertEqual(attrib, cloak.SubjectAttributeOID[attrib].value._name)
 
     def test_subject_attribute_names(self):

@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-""" X509 CSR Policy """
+""" X509 CSR Template """
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from difflib import get_close_matches
 from enum import Enum
-from json import dump, load
+from uuid import uuid4
 
 from cryptography import x509
+
+from .file_io import read_file_url, write_file_url
 
 __all__ = (
     'BasicConstraints',
     'KeyUsage',
-    'Policy',
+    'Template',
     'SubjectAttributeOID',
     'subject_attribute_names',
 )
@@ -39,43 +41,47 @@ class KeyUsage:
 
 
 @dataclass(frozen=True)
-class Policy:
+class Template:
+    id: str
+    policy: str
     subject: ((str, str), ...)
     subject_alt_names: tuple = None
     key_usage: KeyUsage = None
     basic_constraints: BasicConstraints = BasicConstraints()
     key_size: int = 2048
     hash_algorithm: str = 'SHA256'
+    key_store: str = 'key.json'
 
     def __post_init__(self):
-        policy_errors = self.policy_errors
-        assert policy_errors == '', policy_errors
+        template_errors = self.template_errors
+        assert template_errors == '', template_errors
 
     def to_dict(self) -> to_dict:
         return asdict(self, dict_factory=lambda t: {x[0]: x[1] for x in t if x[1]})
 
     @staticmethod
-    def from_dict(dict_obj: to_dict) -> Policy:
-        return Policy(
+    def from_dict(dict_obj: to_dict) -> Template:
+        return Template(
+            id=dict_obj.get('id') or str(uuid4()),
+            policy=dict_obj['policy'],
             subject=tuple(tuple(x) for x in dict_obj['subject'] if x[1]),
             subject_alt_names=tuple(x for x in dict_obj.get('subject_alt_names', ()) if x) or None,
             key_usage=KeyUsage(**dict_obj['key_usage']) if dict_obj.get('key_usage') else None,
             basic_constraints=BasicConstraints(**dict_obj.get('basic_constraints', {})),
             key_size=dict_obj.get('key_size', 2048),
-            hash_algorithm=dict_obj.get('hash_algorithm', 'SHA256')
+            hash_algorithm=dict_obj.get('hash_algorithm', 'SHA256'),
+            key_store=dict_obj.get('key_store', 'key.json'),
         )
 
     @staticmethod
-    def from_file(filename: str) -> Policy:
-        with open(filename) as infile:
-            return Policy.from_dict(load(infile))
+    def from_file(filename: str) -> Template:
+        return Template.from_dict(dict_obj=read_file_url(file_url=filename))
 
     def to_file(self, filename: str) -> None:
-        with open(filename, 'w') as outfile:
-            dump(self.to_dict(), outfile, indent=2)
+        write_file_url(dict_obj=self.to_dict(), file_url=filename)
 
     @property
-    def policy_errors(self) -> str:
+    def template_errors(self) -> str:
         return '\n'.join(error for error in (
             '' if isinstance(self.subject, tuple) else 'subject error {}'.format(self.subject),
             *tuple(

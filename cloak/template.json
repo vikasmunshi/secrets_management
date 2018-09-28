@@ -1,7 +1,9 @@
 {
+  "id": "42e18959-c041-42be-a831-e315b366473f",
+  "policy": "https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/policy/policy.json",
   "subject": [
     ["businessCategory", ""],
-    ["commonName", "Common Name"],
+    ["commonName", "",
     ["countryName", ""],
     ["dnQualifier", ""],
     ["domainComponent", ""],

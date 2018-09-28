@@ -9,7 +9,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import _OID_NAMES as OID_NAMES
 
 from .crypt import new_rsa_key, rsa_key_to_str
-from .policy import Policy, SubjectAttributeOID
+from .file_io import read_file_url, write_file_url
+from .template import Template, SubjectAttributeOID
 
 __all__ = (
     'certificate_signing_request_main',
@@ -20,104 +21,105 @@ __all__ = (
 )
 
 
-def certificate_signing_request_main(policy_filename: str, key_filename: str, csr_filename: str, ) -> None:
-    key_str, csr_str = str_dump_new_certificate_signing_request_and_key(Policy.from_file(policy_filename))
-    with open(key_filename, 'w') as key_file, open(csr_filename, 'w') as csr_file:
-        key_file.write(key_str)
-        csr_file.write(csr_str)
+def certificate_signing_request_main(template_filename: str) -> None:
+    template = Template.from_file(template_filename)
+    policy = read_file_url(template.policy)
+    key_str, csr_str = str_dump_new_certificate_signing_request_and_key(template)
+    write_file_url(dict_obj={'key': key_str}, file_url=template.key_store)
+    write_file_url(dict_obj={'csr': csr_str}, file_url=policy['ra'])
 
 
-def check_csr(csr: x509.CertificateSigningRequest, policy: Policy) -> str:
-    """ find all differences (errors) between info in csr and policy, return empty string if no errors"""
+def check_csr(csr: x509.CertificateSigningRequest, template: Template) -> str:
+    """ find all differences (errors) between info in csr and template, return empty string if no errors"""
     extensions = {OID_NAMES.get(extension.oid, extension.oid): extension.value for extension in csr.extensions}
     # noinspection PyProtectedMember
     return '\n'.join(error for error in (
         # verify csr signature
         '' if csr.is_signature_valid else 'hmmm... csr signature is not valid!!!',
         # verify signature hash algorithm
-        '' if csr.signature_hash_algorithm.name == policy.hash_algorithm.lower() else 'hmmm... wrong hash algorithm!!!',
+        '' if csr.signature_hash_algorithm.name == template.hash_algorithm.lower() else 'hmmm wrong hash algorithm!!!',
         # verify subject matches
-        '' if policy.subject == tuple((OID_NAMES.get(attrib.oid), attrib.value) for attrib in csr.subject)
-        else 'subject mismatch:\n{}\n{}\n'.format(csr.subject, policy.subject),
+        '' if template.subject == tuple((OID_NAMES.get(attrib.oid), attrib.value) for attrib in csr.subject)
+        else 'subject mismatch:\n{}\n{}\n'.format(csr.subject, template.subject),
         # verify subjectAltName
-        '' if policy.subject_alt_names is None and 'subject_alt_names' not in extensions
-        else '' if tuple(x.value for x in extensions['subjectAltName']) == policy.subject_alt_names
-        else 'subject_alt_names mismatch:\n{}\n{}\n'.format(extensions['subjectAltName'], policy.subject_alt_names),
+        '' if template.subject_alt_names is None and 'subject_alt_names' not in extensions
+        else '' if tuple(x.value for x in extensions['subjectAltName']) == template.subject_alt_names
+        else 'subject_alt_names mismatch:\n{}\n{}\n'.format(extensions['subjectAltName'], template.subject_alt_names),
         # verify basicConstraints ca
-        '' if extensions['basicConstraints'].ca == policy.basic_constraints.ca
+        '' if extensions['basicConstraints'].ca == template.basic_constraints.ca
         else 'basicConstraints ca mismatch:\n{}\n{}\n'.format(extensions['basicConstraints'].ca,
-                                                              policy.basic_constraints.ca),
+                                                              template.basic_constraints.ca),
         # verify basicConstraints path_length
-        '' if extensions['basicConstraints'].path_length == policy.basic_constraints.path_length
+        '' if extensions['basicConstraints'].path_length == template.basic_constraints.path_length
         else 'basicConstraints path_length mismatch:\n{}\n{}\n'.format(extensions['basicConstraints'].path_length,
-                                                                       policy.basic_constraints.path_length),
+                                                                       template.basic_constraints.path_length),
         # verify keyUsage
-        '' if policy.key_usage is None and 'keyUsage' not in extensions
+        '' if template.key_usage is None and 'keyUsage' not in extensions
         else '' if all((
-            extensions['keyUsage'].digital_signature == policy.key_usage.digital_signature,
-            extensions['keyUsage'].content_commitment == policy.key_usage.content_commitment,
-            extensions['keyUsage'].key_encipherment == policy.key_usage.key_encipherment,
-            extensions['keyUsage'].data_encipherment == policy.key_usage.data_encipherment,
-            extensions['keyUsage'].key_agreement == policy.key_usage.key_agreement,
-            extensions['keyUsage'].key_cert_sign == policy.key_usage.key_cert_sign,
-            extensions['keyUsage'].crl_sign == policy.key_usage.crl_sign,
-            extensions['keyUsage']._encipher_only == policy.key_usage.encipher_only,
-            extensions['keyUsage']._decipher_only == policy.key_usage.decipher_only,
+            extensions['keyUsage'].digital_signature == template.key_usage.digital_signature,
+            extensions['keyUsage'].content_commitment == template.key_usage.content_commitment,
+            extensions['keyUsage'].key_encipherment == template.key_usage.key_encipherment,
+            extensions['keyUsage'].data_encipherment == template.key_usage.data_encipherment,
+            extensions['keyUsage'].key_agreement == template.key_usage.key_agreement,
+            extensions['keyUsage'].key_cert_sign == template.key_usage.key_cert_sign,
+            extensions['keyUsage'].crl_sign == template.key_usage.crl_sign,
+            extensions['keyUsage']._encipher_only == template.key_usage.encipher_only,
+            extensions['keyUsage']._decipher_only == template.key_usage.decipher_only,
         ))
-        else 'keyUsage mismatch:\n{}\n{}\n'.format(extensions['keyUsage'], policy.key_usage),
+        else 'keyUsage mismatch:\n{}\n{}\n'.format(extensions['keyUsage'], template.key_usage),
         # verify KeySize
-        '' if policy.key_size == csr.public_key().key_size
-        else 'KeySize mismatch:\n{}\n{}\n'.format(csr.public_key().key_size, policy.key_size),
+        '' if template.key_size == csr.public_key().key_size
+        else 'KeySize mismatch:\n{}\n{}\n'.format(csr.public_key().key_size, template.key_size),
         # verify KeySize >= 2048
         '' if csr.public_key().key_size >= 2048 else 'weak key size {}'.format(csr.public_key().key_size)
 
     ) if error != '')
 
 
-def check_csr_str(csr: str, policy: Policy) -> str:
-    return check_csr(csr=x509.load_pem_x509_csr(data=csr.encode(), backend=backend), policy=policy)
+def check_csr_str(csr: str, template: Template) -> str:
+    return check_csr(csr=x509.load_pem_x509_csr(data=csr.encode(), backend=backend), template=template)
 
 
-def new_certificate_signing_request(policy: Policy, rsa_key: rsa.RSAPrivateKey) -> x509.CertificateSigningRequest:
+def new_certificate_signing_request(template: Template, rsa_key: rsa.RSAPrivateKey) -> x509.CertificateSigningRequest:
     csr = x509.CertificateSigningRequestBuilder(
         subject_name=x509.Name(
-            tuple(x509.NameAttribute(SubjectAttributeOID[k].value, v) for k, v in policy.subject))
+            tuple(x509.NameAttribute(SubjectAttributeOID[k].value, v) for k, v in template.subject))
     ).add_extension(
         x509.BasicConstraints(
-            ca=policy.basic_constraints.ca,
-            path_length=policy.basic_constraints.path_length
+            ca=template.basic_constraints.ca,
+            path_length=template.basic_constraints.path_length
         ),
         critical=True
     )
-    if policy.subject_alt_names:
+    if template.subject_alt_names:
         csr = csr.add_extension(
-            x509.SubjectAlternativeName(tuple(x509.DNSName(s) for s in policy.subject_alt_names)),
+            x509.SubjectAlternativeName(tuple(x509.DNSName(s) for s in template.subject_alt_names)),
             critical=False
         )
-    if policy.key_usage:
+    if template.key_usage:
         csr = csr.add_extension(
             x509.KeyUsage(
-                digital_signature=policy.key_usage.digital_signature,
-                content_commitment=policy.key_usage.content_commitment,
-                key_encipherment=policy.key_usage.key_encipherment,
-                data_encipherment=policy.key_usage.data_encipherment,
-                key_agreement=policy.key_usage.key_agreement,
-                key_cert_sign=policy.key_usage.key_cert_sign,
-                crl_sign=policy.key_usage.crl_sign,
-                encipher_only=policy.key_usage.encipher_only,
-                decipher_only=policy.key_usage.decipher_only
+                digital_signature=template.key_usage.digital_signature,
+                content_commitment=template.key_usage.content_commitment,
+                key_encipherment=template.key_usage.key_encipherment,
+                data_encipherment=template.key_usage.data_encipherment,
+                key_agreement=template.key_usage.key_agreement,
+                key_cert_sign=template.key_usage.key_cert_sign,
+                crl_sign=template.key_usage.crl_sign,
+                encipher_only=template.key_usage.encipher_only,
+                decipher_only=template.key_usage.decipher_only
             ),
             critical=True
         )
-    csr = csr.sign(rsa_key, getattr(hashes, policy.hash_algorithm)(), backend)
-    csr_errors = check_csr(csr=csr, policy=policy)
+    csr = csr.sign(rsa_key, getattr(hashes, template.hash_algorithm)(), backend)
+    csr_errors = check_csr(csr=csr, template=template)
     assert csr_errors == '', csr_errors
     return csr
 
 
-def str_dump_new_certificate_signing_request_and_key(policy: Policy) -> (str, str):
-    rsa_key = new_rsa_key(key_size=policy.key_size)
+def str_dump_new_certificate_signing_request_and_key(template: Template) -> (str, str):
+    rsa_key = new_rsa_key(key_size=template.key_size)
     return (
         rsa_key_to_str(private_key=rsa_key),
-        new_certificate_signing_request(policy, rsa_key).public_bytes(encoding=serialization.Encoding.PEM).decode()
+        new_certificate_signing_request(template, rsa_key).public_bytes(encoding=serialization.Encoding.PEM).decode()
     )
