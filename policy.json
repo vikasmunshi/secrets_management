@@ -1,0 +1,49 @@
+{
+  "id": "81a92f3a-eaa5-41a7-83c8-69f2a2f007b5",
+  "url": "https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/policy.json",
+  "ra": "https://localhost:8443/",
+  "subject": [
+    ["businessCategory", "not_allowed"],
+    ["commonName", "allowed validated host_name"],
+    ["countryName", "allowed validated host_country"],
+    ["dnQualifier", "not_allowed"],
+    ["domainComponent", "not_allowed"],
+    ["emailAddress", "not_allowed"],
+    ["generationQualifier", "not_allowed"],
+    ["givenName", "not_allowed"],
+    ["jurisdictionCountryName", "not_allowed"],
+    ["jurisdictionLocalityName", "not_allowed"],
+    ["jurisdictionStateOrProvinceName", "not_allowed"],
+    ["localityName", "not_allowed"],
+    ["organizationalUnitName", "allowed any"],
+    ["organizationName", "allowed validated equals NL"],
+    ["postalAddress", "not_allowed"],
+    ["postalCode", "not_allowed"],
+    ["pseudonym", "not_allowed"],
+    ["serialNumber", "allowed any"],
+    ["stateOrProvinceName", "not_allowed"],
+    ["streetAddress", "not_allowed"],
+    ["surname", "not_allowed"],
+    ["title", "not_allowed"],
+    ["userID", "not_allowed"],
+    ["x500UniqueIdentifier", "not_allowed"]
+  ],
+  "subject_alt_names": "allowed validated host_name",
+  "key_usage": {
+    "digital_signature": true,
+    "content_commitment": false,
+    "key_encipherment": true,
+    "data_encipherment": false,
+    "key_agreement": false,
+    "key_cert_sign": false,
+    "crl_sign": false,
+    "encipher_only": false,
+    "decipher_only": false
+  },
+  "basic_constraints": {
+    "ca": false,
+    "path_length": null
+  },
+  "key_size": 2048,
+  "hash_algorithm": "SHA256"
+}
