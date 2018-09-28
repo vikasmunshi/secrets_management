@@ -8,7 +8,7 @@ from time import time
 base_dirname = path.dirname(path.abspath(__file__))
 major_version = 0
 manual_version_correction = int(argv[1] if len(argv) > 1 else 0)
-minor_version = 3
+minor_version = 4
 package_name = 'cloak'
 package_version = '{}.{}.{}'.format(major_version, minor_version, (int(time()) // 3600) + manual_version_correction)
 
@@ -37,7 +37,7 @@ def update_version(filename: str, var_name: str) -> None:
 
 
 if __name__ == '__main__':
-    for file_with_egg in (path.join(base_dirname, 'Dockerfile'), path.join(base_dirname, 'README.md')):
+    for file_with_egg in (path.join(base_dirname, 'sample/Dockerfile'), path.join(base_dirname, 'README.md')):
         update_egg(file_with_egg)
 
     for file_with_version, version_var_name in (

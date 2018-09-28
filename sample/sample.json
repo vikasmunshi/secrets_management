@@ -16,5 +16,5 @@
   },
   "key_size": 2048,
   "hash_algorithm": "SHA256",
-  "key_store": "test.key"
+  "key_store": "key.json"
 }

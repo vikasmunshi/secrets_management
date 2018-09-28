@@ -29,12 +29,9 @@ from .csr import (
     new_certificate_signing_request,
     str_dump_new_certificate_signing_request_and_key,
 )
-from .template import (
-    BasicConstraints,
-    KeyUsage,
-    Template,
-    SubjectAttributeOID,
-    subject_attribute_names,
+from .io import (
+    read_file_url,
+    write_file_url,
 )
 from .secret_sharing import (
     Share,
@@ -42,9 +39,12 @@ from .secret_sharing import (
     split,
     un_split,
 )
-from .file_io import (
-    read_file_url,
-    write_file_url,
+from .template import (
+    BasicConstraints,
+    KeyUsage,
+    Template,
+    SubjectAttributeOID,
+    subject_attribute_names,
 )
 
 __all__ = (
@@ -86,4 +86,4 @@ __author__ = 'Vikas Munshi'
 __email__ = 'vikas.munshi@gmail.com'
 __license__ = 'GNU GPL3'
 __package__ = path.basename(path.dirname(path.abspath(__file__)))
-__version__ = '0.3.427162'
+__version__ = '0.4.427263'

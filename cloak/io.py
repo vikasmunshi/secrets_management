@@ -6,6 +6,7 @@ from json import dump, dumps, load, loads
 from os import path
 from ssl import SSLContext
 from urllib import request
+from uuid import uuid4
 
 __all__ = (
     'read_file_url',
@@ -29,7 +30,7 @@ def read_file_url(file_url: str) -> dict:
     if _is_url(file_url):
         return loads(request.urlopen(
             url=request.Request(
-                url=file_url,
+                url=file_url + '?req_id={}'.format(uuid4()),
                 headers={'Accept': 'application/json', 'charset': 'utf-8'},
                 method='GET'),
             context=_get_simple_context()).read())
