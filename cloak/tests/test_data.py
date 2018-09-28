@@ -12,8 +12,10 @@ rsa_key_pairs = zip(rsa_keys, rsa_pub_keys)
 
 random_strings = tuple(cloak.random_str(2 ** x) for x in range(9))
 
-test_policies = (
+test_templates = (
     cloak.Template(
+        id="42e18959-c041-42be-a831-e315b366473f",
+        policy="https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/policy/policy.json",
         subject=(
             ('commonName', 'test common name'),
             ('organizationName', 'test org'),
@@ -24,6 +26,8 @@ test_policies = (
         basic_constraints=cloak.BasicConstraints(ca=False)
     ),
     cloak.Template(
+        id="42e18959-c041-42be-a831-e315b366473f",
+        policy="https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/policy/policy.json",
         subject=(
             ('commonName', 'test common name'),
             ('organizationName', 'test org'),
@@ -35,8 +39,10 @@ test_policies = (
     ),
 )
 
-valid_policy_dicts = (
+valid_template_dicts = (
     {
+        'id': '42e18959-c041-42be-a831-e315b366473f',
+        'policy': 'https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/policy/policy.json',
         'subject': (
             ('commonName', 'test common name'),
             ('organizationName', 'test org'),
@@ -49,6 +55,8 @@ valid_policy_dicts = (
         'hash_algorithm': 'SHA256'
     },
     {
+        'id': '42e18959-c041-42be-a831-e315b366473f',
+        'policy': 'https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/policy/policy.json',
         'subject': (
             ('commonName', 'test ca name'),
             ('organizationName', 'test org'),
@@ -61,6 +69,8 @@ valid_policy_dicts = (
         'hash_algorithm': 'SHA256'
     },
     {
+        'id': '42e18959-c041-42be-a831-e315b366473f',
+        'policy': 'https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/policy/policy.json',
         'subject': (
             ('commonName', 'test common name'),
             ('organizationName', 'test org'),
@@ -71,6 +81,8 @@ valid_policy_dicts = (
         'key_usage': {'digital_signature': True, 'key_encipherment': True}
     },
     {
+        'id': '42e18959-c041-42be-a831-e315b366473f',
+        'policy': 'https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/policy/policy.json',
         'subject': (
             ('commonName', 'test common name 3'),
             ('organizationName', 'test org'),
@@ -81,8 +93,10 @@ valid_policy_dicts = (
     },
 )
 
-invalid_policy_dicts = (
+invalid_template_dicts = (
     {
+        'id': '42e18959-c041-42be-a831-e315b366473f',
+        'policy': 'https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/policy/policy.json',
         'subject': (
             ('commonName2', 'test common name'),  # invalid subject attribute
             ('organizationName', 'test org'),
@@ -94,6 +108,8 @@ invalid_policy_dicts = (
         'hash_algorithm': 'SHA256'
     },
     {
+        'id': '42e18959-c041-42be-a831-e315b366473f',
+        'policy': 'https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/policy/policy.json',
         'subject': (
             ('commonName', 'test common name'),
             ('organizationName', 'test org'),
@@ -105,6 +121,8 @@ invalid_policy_dicts = (
         'hash_algorithm': 'SHA256'
     },
     {
+        'id': '42e18959-c041-42be-a831-e315b366473f',
+        'policy': 'https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/policy/policy.json',
         'subject': (  # empty policy
             ('businessCategory', ''),
             ('commonName', ''),

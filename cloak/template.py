@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from cryptography import x509
 
-from .file_io import read_file_url, write_file_url
+from .io import read_file_url, write_file_url
 
 __all__ = (
     'BasicConstraints',
