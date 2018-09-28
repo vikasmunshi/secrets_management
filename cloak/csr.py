@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import _OID_NAMES as OID_NAMES
 
 from .crypt import new_rsa_key, rsa_key_to_str
-from .file_io import read_file_url, write_file_url
+from .io import read_file_url, write_file_url
 from .template import Template, SubjectAttributeOID
 
 __all__ = (
