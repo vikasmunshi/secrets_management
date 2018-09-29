@@ -10,7 +10,7 @@ from uuid import uuid4
 
 from cryptography import x509
 
-from .io import read_file_url, write_file_url
+from .io import read_file_or_url, write_file_or_url
 
 __all__ = (
     'BasicConstraints',
@@ -75,10 +75,10 @@ class Template:
 
     @staticmethod
     def from_file(filename: str) -> Template:
-        return Template.from_dict(dict_obj=read_file_url(file_url=filename))
+        return Template.from_dict(dict_obj=read_file_or_url(file_url=filename))
 
     def to_file(self, filename: str) -> None:
-        write_file_url(dict_obj=self.to_dict(), file_url=filename)
+        write_file_or_url(dict_obj=self.to_dict(), file_url=filename)
 
     @property
     def template_errors(self) -> str:

@@ -9,7 +9,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.x509.oid import _OID_NAMES as OID_NAMES
 
 from .crypt import new_rsa_key, rsa_key_to_str
-from .io import read_file_url, write_file_url
+from .io import read_file_or_url, write_file_or_url
 from .template import Template, SubjectAttributeOID
 
 __all__ = (
@@ -23,10 +23,10 @@ __all__ = (
 
 def certificate_signing_request_main(template_filename: str) -> None:
     template = Template.from_file(template_filename)
-    policy = read_file_url(template.policy)
+    policy = read_file_or_url(template.policy)
     key_str, csr_str = str_dump_new_certificate_signing_request_and_key(template)
-    write_file_url(dict_obj={'key': key_str}, file_url=template.key_store)
-    write_file_url(dict_obj={'csr': csr_str}, file_url=policy['ra'])
+    write_file_or_url(dict_obj={'key': key_str}, file_url=template.key_store)
+    write_file_or_url(dict_obj={'csr': csr_str}, file_url=policy['ra'])
 
 
 def check_csr(csr: x509.CertificateSigningRequest, template: Template) -> str:

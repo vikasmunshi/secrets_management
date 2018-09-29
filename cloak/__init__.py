@@ -30,8 +30,8 @@ from .csr import (
     str_dump_new_certificate_signing_request_and_key,
 )
 from .io import (
-    read_file_url,
-    write_file_url,
+    read_file_or_url,
+    write_file_or_url,
 )
 from .secret_sharing import (
     Share,
@@ -62,7 +62,7 @@ __all__ = (
     'new_certificate_signing_request',
     'new_rsa_key',
     'random_str',
-    'read_file_url',
+    'read_file_or_url',
     'rsa_decrypt',
     'rsa_encrypt',
     'rsa_key_from_file',
@@ -80,7 +80,7 @@ __all__ = (
     'subject_attribute_names',
     'SubjectAttributeOID',
     'un_split',
-    'write_file_url',
+    'write_file_or_url',
 )
 __author__ = 'Vikas Munshi'
 __email__ = 'vikas.munshi@gmail.com'

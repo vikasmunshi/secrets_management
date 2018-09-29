@@ -1,7 +1,7 @@
 {
   "id": "81a92f3a-eaa5-41a7-83c8-69f2a2f007b5",
   "url": "https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/policy/policy.json",
-  "ra": "https://1247b591-4f1a-4605-9a4f-5c7a2d9a3a12.mock.pstmn.io/csr/",
+  "ra": "https://localhost/csr",
   "subject": [
     ["businessCategory", "not_allowed"],
     ["commonName", "allowed validated host_dns_name"],
