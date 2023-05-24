@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.12-rc-slim
 RUN python3 -m pip install cryptography
 RUN python3 -m pip install -e git+https://github.com/vikasmunshi/secrets_management.git#egg=cloak-0.4.427290
 ADD https://raw.githubusercontent.com/vikasmunshi/secrets_management/master/sample/sample.json /etc/sample.json
